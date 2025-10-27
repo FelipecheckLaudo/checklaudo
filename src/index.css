@@ -62,47 +62,47 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 270 25% 10%;
-    --foreground: 250 100% 98%;
+    --background: 270 30% 8%;
+    --foreground: 25 95% 70%;
 
     --card: 270 25% 12%;
-    --card-foreground: 250 100% 98%;
+    --card-foreground: 25 95% 70%;
 
     --popover: 270 25% 12%;
-    --popover-foreground: 250 100% 98%;
+    --popover-foreground: 25 95% 70%;
 
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 270 91% 35%;
+    --primary-foreground: 25 95% 70%;
     
-    --primary-dark: 270 91% 35%;
+    --primary-dark: 270 91% 25%;
 
-    --secondary: 10 90% 72%;
-    --secondary-foreground: 270 25% 10%;
+    --secondary: 25 95% 60%;
+    --secondary-foreground: 270 30% 8%;
 
-    --muted: 270 20% 20%;
-    --muted-foreground: 250 15% 70%;
+    --muted: 270 20% 15%;
+    --muted-foreground: 25 80% 65%;
 
-    --accent: 10 90% 72%;
-    --accent-foreground: 270 25% 10%;
+    --accent: 25 95% 60%;
+    --accent-foreground: 270 30% 8%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 20% 22%;
-    --input: 270 20% 20%;
-    --ring: 262 83% 58%;
+    --border: 270 20% 18%;
+    --input: 270 20% 15%;
+    --ring: 25 95% 60%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(270 91% 35%), hsl(262 83% 58%));
-    --gradient-accent: linear-gradient(135deg, hsl(262 83% 58%), hsl(10 90% 72%));
-    --gradient-subtle: linear-gradient(180deg, hsl(270 25% 10%), hsl(270 25% 12%));
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --gradient-primary: linear-gradient(135deg, hsl(270 91% 25%), hsl(270 91% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(270 91% 35%), hsl(25 95% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(270 30% 8%), hsl(270 25% 12%));
+    --sidebar-background: 270 30% 10%;
+    --sidebar-foreground: 25 95% 70%;
+    --sidebar-primary: 25 95% 60%;
+    --sidebar-primary-foreground: 270 30% 8%;
+    --sidebar-accent: 270 20% 15%;
+    --sidebar-accent-foreground: 25 95% 70%;
+    --sidebar-border: 270 20% 18%;
+    --sidebar-ring: 25 95% 60%;
   }
 }
 

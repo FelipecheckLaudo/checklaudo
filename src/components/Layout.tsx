@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { ClipboardList, BarChart3, Users, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ThemeToggle from "./ThemeToggle";
 const navItems = [{
   path: "/",
   label: "Vistorias",
@@ -33,15 +34,18 @@ export default function Layout({
               <span className="text-xl font-bold">VistoriaSys</span>
             </div>
             
-            <div className="flex gap-1">
-              {navItems.map(item => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return <Link key={item.path} to={item.path} className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200", isActive ? "bg-white/20 shadow-md" : "hover:bg-white/10")}>
-                    <Icon className="h-5 w-5" />
-                    <span className="hidden md:inline font-medium">{item.label}</span>
-                  </Link>;
-            })}
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1">
+                {navItems.map(item => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return <Link key={item.path} to={item.path} className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200", isActive ? "bg-white/20 shadow-md" : "hover:bg-white/10")}>
+                      <Icon className="h-5 w-5" />
+                      <span className="hidden md:inline font-medium">{item.label}</span>
+                    </Link>;
+              })}
+              </div>
+              <ThemeToggle />
             </div>
           </nav>
         </div>
