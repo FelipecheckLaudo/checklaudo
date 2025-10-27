@@ -124,7 +124,7 @@ export function EditVistoriaDialog({
                   id="edit-modelo"
                   placeholder="Ex: Gol 1.0"
                   value={formData.modelo}
-                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value.toUpperCase() })}
                   required
                   disabled={isSaving}
                 />
@@ -140,7 +140,7 @@ export function EditVistoriaDialog({
                   id="edit-cliente"
                   placeholder="Nome do cliente"
                   value={formData.cliente_nome}
-                  onChange={(e) => setFormData({ ...formData, cliente_nome: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, cliente_nome: e.target.value.toUpperCase() })}
                   required
                   disabled={isSaving}
                 />
@@ -235,7 +235,7 @@ export function EditVistoriaDialog({
                   id="edit-digitador"
                   placeholder="Nome do digitador"
                   value={formData.digitador}
-                  onChange={(e) => setFormData({ ...formData, digitador: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, digitador: e.target.value.toUpperCase() })}
                   disabled={isSaving}
                 />
               </div>
@@ -246,7 +246,7 @@ export function EditVistoriaDialog({
                   id="edit-liberador"
                   placeholder="Nome do liberador"
                   value={formData.liberador}
-                  onChange={(e) => setFormData({ ...formData, liberador: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, liberador: e.target.value.toUpperCase() })}
                   disabled={isSaving}
                 />
               </div>

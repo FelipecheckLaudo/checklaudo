@@ -144,7 +144,7 @@ export default function NovaVistoria() {
                   id="modelo"
                   placeholder="Ex: Honda Civic 2020"
                   value={formData.modelo}
-                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value.toUpperCase() })}
                   required
                   disabled={isSaving}
                 />
@@ -285,7 +285,7 @@ export default function NovaVistoria() {
                   placeholder="Ex: João Silva"
                   value={novoCliente.nome}
                   onChange={(e) => {
-                    const value = e.target.value;
+                    const value = e.target.value.toUpperCase();
                     setNovoCliente({ ...novoCliente, nome: value });
                     if (value && formData.clienteId) {
                       setFormData({ ...formData, clienteId: "" });
@@ -345,7 +345,7 @@ export default function NovaVistoria() {
                   id="digitador"
                   placeholder="Nome do digitador"
                   value={formData.digitador}
-                  onChange={(e) => setFormData({ ...formData, digitador: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, digitador: e.target.value.toUpperCase() })}
                   disabled={isSaving}
                 />
               </div>
@@ -356,7 +356,7 @@ export default function NovaVistoria() {
                   id="liberador"
                   placeholder="Nome do liberador"
                   value={formData.liberador}
-                  onChange={(e) => setFormData({ ...formData, liberador: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, liberador: e.target.value.toUpperCase() })}
                   disabled={isSaving}
                 />
               </div>

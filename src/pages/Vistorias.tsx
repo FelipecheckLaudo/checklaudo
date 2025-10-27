@@ -25,7 +25,7 @@ import {
 import { getVistorias, deleteVistoria, updateVistoria, type Vistoria } from "@/lib/database";
 import { toast } from "sonner";
 import { EditVistoriaDialog } from "@/components/EditVistoriaDialog";
-import { SituacaoBadge } from "@/components/SituacaoBadge";
+import { SituacaoDropdown } from "@/components/SituacaoDropdown";
 
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,6 +80,16 @@ export default function Vistorias() {
       toast.error(error.message || "Erro ao atualizar vistoria");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSituacaoChange = async (vistoriaId: string, novaSituacao: string) => {
+    try {
+      await updateVistoria(vistoriaId, { situacao: novaSituacao });
+      await loadVistorias();
+      toast.success("Situação atualizada com sucesso!");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao atualizar situação");
     }
   };
 
@@ -201,7 +211,12 @@ export default function Vistorias() {
                       <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
                       <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
                       <TableCell>{vistoria.pagamento}</TableCell>
-                      <TableCell><SituacaoBadge situacao={vistoria.situacao} /></TableCell>
+                      <TableCell>
+                        <SituacaoDropdown 
+                          situacao={vistoria.situacao} 
+                          onSituacaoChange={(novaSituacao) => handleSituacaoChange(vistoria.id, novaSituacao)}
+                        />
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
                           <Button
