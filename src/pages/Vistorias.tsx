@@ -26,6 +26,7 @@ import { getVistorias, deleteVistoria, updateVistoria, type Vistoria } from "@/l
 import { toast } from "sonner";
 import { EditVistoriaDialog } from "@/components/EditVistoriaDialog";
 import { SituacaoDropdown } from "@/components/SituacaoDropdown";
+import { exportVistoriasToPDF } from "@/lib/pdfExport";
 
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -93,6 +94,21 @@ export default function Vistorias() {
     }
   };
 
+  const handleExportPDF = () => {
+    if (filteredVistorias.length === 0) {
+      toast.error("Não há vistorias para exportar");
+      return;
+    }
+    
+    try {
+      exportVistoriasToPDF(filteredVistorias);
+      toast.success("PDF gerado com sucesso!");
+    } catch (error: any) {
+      toast.error("Erro ao gerar PDF");
+      console.error(error);
+    }
+  };
+
   const filteredVistorias = vistorias.filter(
     (v) =>
       v.placa.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -138,9 +154,9 @@ export default function Vistorias() {
               <Upload className="h-4 w-4" />
               <span className="hidden sm:inline">Importar</span>
             </Button>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={handleExportPDF}>
               <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Exportar</span>
+              <span className="hidden sm:inline">Exportar PDF</span>
             </Button>
           </div>
         </div>
