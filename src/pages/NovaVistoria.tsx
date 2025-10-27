@@ -214,8 +214,12 @@ export default function NovaVistoria() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PENDENTE">Pendente</SelectItem>
-                    <SelectItem value="APROVADA">Aprovada</SelectItem>
-                    <SelectItem value="REPROVADA">Reprovada</SelectItem>
+                    <SelectItem value="APROVADO">Aprovado</SelectItem>
+                    <SelectItem value="REPROVADO">Reprovado</SelectItem>
+                    <SelectItem value="APROVADO COM APONTAMENTOS">Aprovado com Apontamentos</SelectItem>
+                    <SelectItem value="SUSPEITO ADULTERAÇÃO">Suspeito Adulteração</SelectItem>
+                    <SelectItem value="CONFORME">Conforme</SelectItem>
+                    <SelectItem value="NÃO CONFORME">Não Conforme</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

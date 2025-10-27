@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +25,7 @@ import {
 import { getVistorias, deleteVistoria, updateVistoria, type Vistoria } from "@/lib/database";
 import { toast } from "sonner";
 import { EditVistoriaDialog } from "@/components/EditVistoriaDialog";
+import { SituacaoBadge } from "@/components/SituacaoBadge";
 
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -90,19 +90,6 @@ export default function Vistorias() {
       (v.clienteNome || v.cliente_nome || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getSituacaoBadge = (situacao: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive"> = {
-      PENDENTE: "secondary",
-      APROVADA: "default",
-      REPROVADA: "destructive",
-    };
-    
-    return (
-      <Badge variant={variants[situacao] || "default"}>
-        {situacao}
-      </Badge>
-    );
-  };
 
   const formatDate = (isoDate: string) => {
     return new Date(isoDate).toLocaleDateString("pt-BR", {
@@ -214,7 +201,7 @@ export default function Vistorias() {
                       <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
                       <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
                       <TableCell>{vistoria.pagamento}</TableCell>
-                      <TableCell>{getSituacaoBadge(vistoria.situacao)}</TableCell>
+                      <TableCell><SituacaoBadge situacao={vistoria.situacao} /></TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-2 justify-end">
                           <Button
