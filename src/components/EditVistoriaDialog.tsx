@@ -84,7 +84,9 @@ export function EditVistoriaDialog({
   };
 
   const formatPlaca = (value: string) => {
-    return value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);
+    const cleaned = value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+    if (cleaned.length <= 3) return cleaned;
+    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}`;
   };
 
   return (
@@ -106,10 +108,10 @@ export function EditVistoriaDialog({
                 </Label>
                 <Input
                   id="edit-placa"
-                  placeholder="ABC1D23"
+                  placeholder="ABC-1234"
                   value={formData.placa}
                   onChange={(e) => setFormData({ ...formData, placa: formatPlaca(e.target.value) })}
-                  maxLength={7}
+                  maxLength={8}
                   required
                   disabled={isSaving}
                   className="font-mono"
@@ -191,12 +193,18 @@ export function EditVistoriaDialog({
                 </Label>
                 <Input
                   id="edit-valor"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0.00"
+                  type="text"
+                  placeholder="R$ 0,00"
                   value={formData.valor}
-                  onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+                  onChange={(e) => {
+                    const valor = e.target.value.replace(/\D/g, "");
+                    const numero = parseFloat(valor) / 100;
+                    const formatado = numero.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL"
+                    });
+                    setFormData({ ...formData, valor: formatado });
+                  }}
                   required
                   disabled={isSaving}
                 />

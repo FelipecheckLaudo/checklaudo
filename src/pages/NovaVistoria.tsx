@@ -51,6 +51,7 @@ export default function NovaVistoria() {
       setIsSaving(true);
       let clienteId = formData.clienteId;
       let clienteNome = "";
+      let clienteCpf = "";
       
       // Se não selecionou cliente existente, verifica se preencheu dados do novo cliente
       if (!clienteId) {
@@ -68,6 +69,7 @@ export default function NovaVistoria() {
         
         clienteId = clienteCriado.id;
         clienteNome = clienteCriado.nome;
+        clienteCpf = clienteCriado.cpf;
         
         // Atualiza lista de clientes
         const novaLista = await getClientes();
@@ -80,6 +82,7 @@ export default function NovaVistoria() {
           return;
         }
         clienteNome = cliente.nome;
+        clienteCpf = cliente.cpf;
       }
       
       await saveVistoria({
@@ -92,6 +95,7 @@ export default function NovaVistoria() {
         cliente_id: clienteId,
         clienteNome: clienteNome,
         cliente_nome: clienteNome,
+        cliente_cpf: clienteCpf,
         digitador: formData.digitador,
         liberador: formData.liberador,
         fotos: []
@@ -192,11 +196,18 @@ export default function NovaVistoria() {
                 </Label>
                 <Input
                   id="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
+                  type="text"
+                  placeholder="R$ 0,00"
                   value={formData.valor}
-                  onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+                  onChange={(e) => {
+                    const valor = e.target.value.replace(/\D/g, "");
+                    const numero = parseFloat(valor) / 100;
+                    const formatado = numero.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL"
+                    });
+                    setFormData({ ...formData, valor: formatado });
+                  }}
                   required
                   disabled={isSaving}
                 />
