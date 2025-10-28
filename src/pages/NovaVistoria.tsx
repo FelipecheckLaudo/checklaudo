@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getClientes, saveVistoria, saveCliente, type Cliente } from "@/lib/database";
 import { toast } from "sonner";
-
 export default function NovaVistoria() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -28,7 +27,6 @@ export default function NovaVistoria() {
     nome: "",
     cpf: ""
   });
-
   useEffect(() => {
     const loadClientes = async () => {
       try {
@@ -43,34 +41,31 @@ export default function NovaVistoria() {
     };
     loadClientes();
   }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       setIsSaving(true);
       let clienteId = formData.clienteId;
       let clienteNome = "";
       let clienteCpf = "";
-      
+
       // Se não selecionou cliente existente, verifica se preencheu dados do novo cliente
       if (!clienteId) {
         if (!novoCliente.nome || !novoCliente.cpf) {
           toast.error("Selecione um cliente ou preencha os dados do novo cliente");
           return;
         }
-        
+
         // Cria novo cliente
         const clienteCriado = await saveCliente({
           nome: novoCliente.nome,
           cpf: novoCliente.cpf,
           observacoes: ""
         });
-        
         clienteId = clienteCriado.id;
         clienteNome = clienteCriado.nome;
         clienteCpf = clienteCriado.cpf;
-        
+
         // Atualiza lista de clientes
         const novaLista = await getClientes();
         setClientes(novaLista);
@@ -84,7 +79,6 @@ export default function NovaVistoria() {
         clienteNome = cliente.nome;
         clienteCpf = cliente.cpf;
       }
-      
       await saveVistoria({
         modelo: formData.modelo,
         placa: formData.placa.toUpperCase(),
@@ -100,7 +94,6 @@ export default function NovaVistoria() {
         liberador: formData.liberador,
         fotos: []
       });
-
       toast.success("Vistoria cadastrada com sucesso!");
       navigate("/");
     } catch (error: any) {
@@ -109,13 +102,11 @@ export default function NovaVistoria() {
       setIsSaving(false);
     }
   };
-
   const formatPlaca = (value: string) => {
     const cleaned = value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
     if (cleaned.length <= 3) return cleaned;
     return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}`;
   };
-
   const formatCPF = (value: string) => {
     const cleaned = value.replace(/\D/g, "");
     if (cleaned.length <= 3) return cleaned;
@@ -123,9 +114,7 @@ export default function NovaVistoria() {
     if (cleaned.length <= 9) return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
     return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`;
   };
-
-  return (
-    <div className="space-y-6 animate-fade-in max-w-4xl">
+  return <div className="space-y-6 animate-fade-in max-w-4xl">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" onClick={() => navigate("/")} disabled={isSaving}>
           <ArrowLeft className="h-5 w-5" />
@@ -144,40 +133,30 @@ export default function NovaVistoria() {
                 <Label htmlFor="modelo">
                   Modelo do Veículo <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="modelo"
-                  placeholder="Ex: Honda Civic 2020"
-                  value={formData.modelo}
-                  onChange={(e) => setFormData({ ...formData, modelo: e.target.value.toUpperCase() })}
-                  required
-                  disabled={isSaving}
-                />
+                <Input id="modelo" placeholder="Ex: Honda Civic 2020" value={formData.modelo} onChange={e => setFormData({
+                ...formData,
+                modelo: e.target.value.toUpperCase()
+              })} required disabled={isSaving} />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="placa">
                   Placa <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="placa"
-                  placeholder="ABC-1234"
-                  value={formData.placa}
-                  onChange={(e) => setFormData({ ...formData, placa: formatPlaca(e.target.value) })}
-                  maxLength={8}
-                  required
-                  disabled={isSaving}
-                />
+                <Input id="placa" placeholder="ABC-1234" value={formData.placa} onChange={e => setFormData({
+                ...formData,
+                placa: formatPlaca(e.target.value)
+              })} maxLength={8} required disabled={isSaving} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pagamento">Forma de Pagamento</Label>
-                <Select
-                  value={formData.pagamento}
-                  onValueChange={(value) => setFormData({ ...formData, pagamento: value })}
-                  disabled={isSaving}
-                >
+                <Select value={formData.pagamento} onValueChange={value => setFormData({
+                ...formData,
+                pagamento: value
+              })} disabled={isSaving}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -194,32 +173,26 @@ export default function NovaVistoria() {
                 <Label htmlFor="valor">
                   Valor <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="valor"
-                  type="text"
-                  placeholder="R$ 0,00"
-                  value={formData.valor}
-                  onChange={(e) => {
-                    const valor = e.target.value.replace(/\D/g, "");
-                    const numero = parseFloat(valor) / 100;
-                    const formatado = numero.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL"
-                    });
-                    setFormData({ ...formData, valor: formatado });
-                  }}
-                  required
-                  disabled={isSaving}
-                />
+                <Input id="valor" type="text" placeholder="R$ 0,00" value={formData.valor} onChange={e => {
+                const valor = e.target.value.replace(/\D/g, "");
+                const numero = parseFloat(valor) / 100;
+                const formatado = numero.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL"
+                });
+                setFormData({
+                  ...formData,
+                  valor: formatado
+                });
+              }} required disabled={isSaving} />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="situacao">Situação</Label>
-                <Select
-                  value={formData.situacao}
-                  onValueChange={(value) => setFormData({ ...formData, situacao: value })}
-                  disabled={isSaving}
-                >
+                <Select value={formData.situacao} onValueChange={value => setFormData({
+                ...formData,
+                situacao: value
+              })} disabled={isSaving}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -245,38 +218,32 @@ export default function NovaVistoria() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="cliente">Selecionar Cliente Existente</Label>
-              {isLoading ? (
-                <div className="flex items-center gap-2 py-2 text-muted-foreground">
+              {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span>Carregando clientes...</span>
-                </div>
-              ) : clientes.length === 0 ? (
-                <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                </div> : clientes.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
                   Nenhum cliente cadastrado. Preencha os dados abaixo para cadastrar um novo cliente.
-                </div>
-              ) : (
-                <Select
-                  value={formData.clienteId}
-                  onValueChange={(value) => {
-                    setFormData({ ...formData, clienteId: value });
-                    if (value) {
-                      setNovoCliente({ nome: "", cpf: "" });
-                    }
-                  }}
-                  disabled={isSaving}
-                >
+                </div> : <Select value={formData.clienteId} onValueChange={value => {
+              setFormData({
+                ...formData,
+                clienteId: value
+              });
+              if (value) {
+                setNovoCliente({
+                  nome: "",
+                  cpf: ""
+                });
+              }
+            }} disabled={isSaving}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione um cliente" />
                   </SelectTrigger>
                   <SelectContent>
-                    {clientes.map((cliente) => (
-                      <SelectItem key={cliente.id} value={cliente.id}>
+                    {clientes.map(cliente => <SelectItem key={cliente.id} value={cliente.id}>
                         {cliente.nome} - {cliente.cpf}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
-                </Select>
-              )}
+                </Select>}
             </div>
 
             <div className="relative">
@@ -291,58 +258,42 @@ export default function NovaVistoria() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="novoClienteNome">Nome do Cliente</Label>
-                <Input
-                  id="novoClienteNome"
-                  placeholder="Ex: João Silva"
-                  value={novoCliente.nome}
-                  onChange={(e) => {
-                    const value = e.target.value.toUpperCase();
-                    setNovoCliente({ ...novoCliente, nome: value });
-                    if (value && formData.clienteId) {
-                      setFormData({ ...formData, clienteId: "" });
-                    }
-                  }}
-                  disabled={!!formData.clienteId || isSaving}
-                />
+                <Input id="novoClienteNome" placeholder="Ex: João Silva" value={novoCliente.nome} onChange={e => {
+                const value = e.target.value.toUpperCase();
+                setNovoCliente({
+                  ...novoCliente,
+                  nome: value
+                });
+                if (value && formData.clienteId) {
+                  setFormData({
+                    ...formData,
+                    clienteId: ""
+                  });
+                }
+              }} disabled={!!formData.clienteId || isSaving} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="novoClienteCpf">CPF do Cliente</Label>
-                <Input
-                  id="novoClienteCpf"
-                  placeholder="123.456.789-00"
-                  value={novoCliente.cpf}
-                  onChange={(e) => {
-                    const value = formatCPF(e.target.value);
-                    setNovoCliente({ ...novoCliente, cpf: value });
-                    if (value && formData.clienteId) {
-                      setFormData({ ...formData, clienteId: "" });
-                    }
-                  }}
-                  maxLength={14}
-                  disabled={!!formData.clienteId || isSaving}
-                />
+                <Input id="novoClienteCpf" placeholder="123.456.789-00" value={novoCliente.cpf} onChange={e => {
+                const value = formatCPF(e.target.value);
+                setNovoCliente({
+                  ...novoCliente,
+                  cpf: value
+                });
+                if (value && formData.clienteId) {
+                  setFormData({
+                    ...formData,
+                    clienteId: ""
+                  });
+                }
+              }} maxLength={14} disabled={!!formData.clienteId || isSaving} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Evidência</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer bg-muted/30">
-              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Arraste as fotos aqui ou clique para selecionar
-              </p>
-              <Button type="button" variant="outline" className="mt-2" disabled={isSaving}>
-                Fazer Upload
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        
 
         <Card>
           <CardHeader>
@@ -352,24 +303,18 @@ export default function NovaVistoria() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="digitador">Digitador</Label>
-                <Input
-                  id="digitador"
-                  placeholder="Nome do digitador"
-                  value={formData.digitador}
-                  onChange={(e) => setFormData({ ...formData, digitador: e.target.value.toUpperCase() })}
-                  disabled={isSaving}
-                />
+                <Input id="digitador" placeholder="Nome do digitador" value={formData.digitador} onChange={e => setFormData({
+                ...formData,
+                digitador: e.target.value.toUpperCase()
+              })} disabled={isSaving} />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="liberador">Liberador</Label>
-                <Input
-                  id="liberador"
-                  placeholder="Nome do liberador"
-                  value={formData.liberador}
-                  onChange={(e) => setFormData({ ...formData, liberador: e.target.value.toUpperCase() })}
-                  disabled={isSaving}
-                />
+                <Input id="liberador" placeholder="Nome do liberador" value={formData.liberador} onChange={e => setFormData({
+                ...formData,
+                liberador: e.target.value.toUpperCase()
+              })} disabled={isSaving} />
               </div>
             </div>
           </CardContent>
@@ -380,15 +325,10 @@ export default function NovaVistoria() {
             Cancelar
           </Button>
           <Button type="submit" className="flex-1 bg-gradient-primary hover:opacity-90 transition-opacity gap-2" disabled={isSaving}>
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Salvar Vistoria
           </Button>
         </div>
       </form>
-    </div>
-  );
+    </div>;
 }
