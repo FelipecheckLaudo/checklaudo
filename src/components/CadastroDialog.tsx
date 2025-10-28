@@ -11,17 +11,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CadastroDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
-  onSave: (data: { nome: string; cpf: string; observacoes: string }) => void;
+  onSave: (data: { nome: string; cpf: string; observacoes: string; foto_url?: string }) => void;
   isSaving?: boolean;
-  initialData?: { id?: string; nome: string; cpf: string; observacoes: string };
+  initialData?: { id?: string; nome: string; cpf: string; observacoes: string; foto_url?: string };
 }
 
 export function CadastroDialog({
@@ -37,7 +38,10 @@ export function CadastroDialog({
     nome: "",
     cpf: "",
     observacoes: "",
+    foto_url: "",
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   useEffect(() => {
     if (initialData) {
@@ -45,13 +49,59 @@ export function CadastroDialog({
         nome: initialData.nome || "",
         cpf: initialData.cpf || "",
         observacoes: initialData.observacoes || "",
+        foto_url: initialData.foto_url || "",
       });
+      setPreviewUrl(initialData.foto_url || "");
     } else {
-      setFormData({ nome: "", cpf: "", observacoes: "" });
+      setFormData({ nome: "", cpf: "", observacoes: "", foto_url: "" });
+      setPreviewUrl("");
     }
+    setSelectedFile(null);
   }, [initialData, open]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Por favor, selecione apenas imagens");
+        return;
+      }
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl("");
+    setFormData({ ...formData, foto_url: "" });
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!selectedFile) return formData.foto_url || null;
+
+    const fileExt = selectedFile.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `cadastros/${fileName}`;
+
+    const { error: uploadError, data } = await supabase.storage
+      .from('vistoria-fotos')
+      .upload(filePath, selectedFile);
+
+    if (uploadError) {
+      toast.error("Erro ao fazer upload da imagem");
+      throw uploadError;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('vistoria-fotos')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.nome || !formData.cpf) {
@@ -59,9 +109,16 @@ export function CadastroDialog({
       return;
     }
 
-    onSave(formData);
-    setFormData({ nome: "", cpf: "", observacoes: "" });
-    onOpenChange(false);
+    try {
+      const fotoUrl = await uploadImage();
+      onSave({ ...formData, foto_url: fotoUrl || undefined });
+      setFormData({ nome: "", cpf: "", observacoes: "", foto_url: "" });
+      setSelectedFile(null);
+      setPreviewUrl("");
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Erro ao processar formulário:", error);
+    }
   };
 
   const formatCPF = (value: string) => {
@@ -74,7 +131,9 @@ export function CadastroDialog({
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen && !isSaving) {
-      setFormData({ nome: "", cpf: "", observacoes: "" });
+      setFormData({ nome: "", cpf: "", observacoes: "", foto_url: "" });
+      setSelectedFile(null);
+      setPreviewUrl("");
     }
     onOpenChange(newOpen);
   };
@@ -128,6 +187,43 @@ export function CadastroDialog({
                 rows={4}
                 disabled={isSaving}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="foto">Foto</Label>
+              {previewUrl ? (
+                <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-border">
+                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-1 right-1 h-6 w-6"
+                    onClick={handleRemoveImage}
+                    disabled={isSaving}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="foto"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    disabled={isSaving}
+                    className="hidden"
+                  />
+                  <Label
+                    htmlFor="foto"
+                    className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md cursor-pointer hover:bg-secondary/80 transition-colors"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Selecionar Imagem
+                  </Label>
+                </div>
+              )}
             </div>
           </div>
           

@@ -6,6 +6,7 @@ export interface Cliente {
   nome: string;
   cpf: string;
   observacoes: string;
+  foto_url?: string;
   created_at?: string;
   criadoEm?: string; // Para compatibilidade
 }
@@ -15,6 +16,7 @@ export interface Visitador {
   nome: string;
   cpf: string;
   observacoes: string;
+  foto_url?: string;
   created_at?: string;
   criadoEm?: string;
 }
@@ -24,6 +26,7 @@ export interface Digitador {
   nome: string;
   cpf: string;
   observacoes: string;
+  foto_url?: string;
   created_at?: string;
   criadoEm?: string;
 }
@@ -68,7 +71,8 @@ export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'cr
     .insert({
       nome: cliente.nome,
       cpf: cliente.cpf,
-      observacoes: cliente.observacoes
+      observacoes: cliente.observacoes,
+      foto_url: cliente.foto_url
     })
     .select()
     .single();
@@ -87,7 +91,8 @@ export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, '
     .update({
       nome: cliente.nome,
       cpf: cliente.cpf,
-      observacoes: cliente.observacoes
+      observacoes: cliente.observacoes,
+      foto_url: cliente.foto_url
     })
     .eq('id', id)
     .select()
@@ -131,7 +136,8 @@ export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm'
     .insert({
       nome: visitador.nome,
       cpf: visitador.cpf,
-      observacoes: visitador.observacoes
+      observacoes: visitador.observacoes,
+      foto_url: visitador.foto_url
     })
     .select()
     .single();
@@ -150,7 +156,8 @@ export const updateVisitador = async (id: string, visitador: Partial<Omit<Visita
     .update({
       nome: visitador.nome,
       cpf: visitador.cpf,
-      observacoes: visitador.observacoes
+      observacoes: visitador.observacoes,
+      foto_url: visitador.foto_url
     })
     .eq('id', id)
     .select()
@@ -194,7 +201,8 @@ export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm'
     .insert({
       nome: digitador.nome,
       cpf: digitador.cpf,
-      observacoes: digitador.observacoes
+      observacoes: digitador.observacoes,
+      foto_url: digitador.foto_url
     })
     .select()
     .single();
@@ -213,7 +221,8 @@ export const updateDigitador = async (id: string, digitador: Partial<Omit<Digita
     .update({
       nome: digitador.nome,
       cpf: digitador.cpf,
-      observacoes: digitador.observacoes
+      observacoes: digitador.observacoes,
+      foto_url: digitador.foto_url
     })
     .eq('id', id)
     .select()

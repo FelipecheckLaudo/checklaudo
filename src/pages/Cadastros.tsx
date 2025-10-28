@@ -76,7 +76,7 @@ export default function Cadastros() {
     }
   };
 
-  const handleSave = async (data: { nome: string; cpf: string; observacoes: string }) => {
+  const handleSave = async (data: { nome: string; cpf: string; observacoes: string; foto_url?: string }) => {
     try {
       setIsSaving(true);
       

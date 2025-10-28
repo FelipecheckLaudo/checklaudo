@@ -14,7 +14,155 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clientes: {
+        Row: {
+          cpf: string
+          created_at: string | null
+          foto_url: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cpf: string
+          created_at?: string | null
+          foto_url?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cpf?: string
+          created_at?: string | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      digitadores: {
+        Row: {
+          cpf: string
+          created_at: string | null
+          foto_url: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cpf: string
+          created_at?: string | null
+          foto_url?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cpf?: string
+          created_at?: string | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      vistoriadores: {
+        Row: {
+          cpf: string
+          created_at: string | null
+          foto_url: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cpf: string
+          created_at?: string | null
+          foto_url?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cpf?: string
+          created_at?: string | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      vistorias: {
+        Row: {
+          cliente_cpf: string | null
+          cliente_id: string | null
+          cliente_nome: string
+          created_at: string | null
+          digitador: string | null
+          fotos: string[] | null
+          id: string
+          liberador: string | null
+          modelo: string
+          pagamento: string
+          placa: string
+          situacao: string
+          updated_at: string | null
+          valor: number
+        }
+        Insert: {
+          cliente_cpf?: string | null
+          cliente_id?: string | null
+          cliente_nome: string
+          created_at?: string | null
+          digitador?: string | null
+          fotos?: string[] | null
+          id?: string
+          liberador?: string | null
+          modelo: string
+          pagamento: string
+          placa: string
+          situacao?: string
+          updated_at?: string | null
+          valor: number
+        }
+        Update: {
+          cliente_cpf?: string | null
+          cliente_id?: string | null
+          cliente_nome?: string
+          created_at?: string | null
+          digitador?: string | null
+          fotos?: string[] | null
+          id?: string
+          liberador?: string | null
+          modelo?: string
+          pagamento?: string
+          placa?: string
+          situacao?: string
+          updated_at?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vistorias_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
