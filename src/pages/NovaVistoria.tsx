@@ -88,6 +88,12 @@ export default function NovaVistoria() {
         clienteNome = cliente.nome;
         clienteCpf = cliente.cpf;
       }
+      // Garante que o valor seja válido (não vazio)
+      if (!formData.valor || formData.valor === "R$ 0,00") {
+        toast.error("Informe um valor válido para a vistoria");
+        return;
+      }
+
       await saveVistoria({
         modelo: formData.modelo,
         placa: formData.placa.toUpperCase(),
