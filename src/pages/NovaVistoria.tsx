@@ -181,7 +181,7 @@ export default function NovaVistoria() {
                 </Label>
                 <Input id="valor" type="text" placeholder="R$ 0,00" value={formData.valor} onChange={e => {
                 const valor = e.target.value.replace(/\D/g, "");
-                const numero = parseFloat(valor) / 100;
+                const numero = valor ? Number(valor) / 100 : 0;
                 const formatado = numero.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL"

@@ -270,7 +270,7 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
       modelo: vistoria.modelo,
       placa: vistoria.placa,
       pagamento: vistoria.pagamento,
-      valor: parseFloat(vistoria.valor),
+      valor: Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')),
       situacao: vistoria.situacao,
       cliente_id: vistoria.clienteId || vistoria.cliente_id,
       cliente_nome: vistoria.clienteNome || vistoria.cliente_nome,
@@ -299,7 +299,7 @@ export const updateVistoria = async (id: string, vistoria: Partial<Vistoria>): P
   if (vistoria.modelo !== undefined) updateData.modelo = vistoria.modelo;
   if (vistoria.placa !== undefined) updateData.placa = vistoria.placa;
   if (vistoria.pagamento !== undefined) updateData.pagamento = vistoria.pagamento;
-  if (vistoria.valor !== undefined) updateData.valor = parseFloat(vistoria.valor);
+  if (vistoria.valor !== undefined) updateData.valor = Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'));
   if (vistoria.situacao !== undefined) updateData.situacao = vistoria.situacao;
   if (vistoria.cliente_nome !== undefined) updateData.cliente_nome = vistoria.cliente_nome;
   if (vistoria.cliente_cpf !== undefined) updateData.cliente_cpf = vistoria.cliente_cpf;
