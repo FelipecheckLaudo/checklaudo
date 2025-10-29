@@ -10,6 +10,7 @@ import { getVistorias, deleteVistoria, updateVistoria, type Vistoria } from "@/l
 import { toast } from "sonner";
 import { EditVistoriaDialog } from "@/components/EditVistoriaDialog";
 import { SituacaoDropdown } from "@/components/SituacaoDropdown";
+import { PagamentoDropdown } from "@/components/PagamentoDropdown";
 import { exportVistoriasToPDF } from "@/lib/pdfExport";
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -69,6 +70,18 @@ export default function Vistorias() {
       toast.success("Situação atualizada com sucesso!");
     } catch (error: any) {
       toast.error(error.message || "Erro ao atualizar situação");
+    }
+  };
+
+  const handlePagamentoChange = async (vistoriaId: string, novoPagamento: string) => {
+    try {
+      await updateVistoria(vistoriaId, {
+        pagamento: novoPagamento
+      });
+      await loadVistorias();
+      toast.success("Forma de pagamento atualizada com sucesso!");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao atualizar forma de pagamento");
     }
   };
   const handleExportPDF = () => {
@@ -172,7 +185,12 @@ export default function Vistorias() {
                       <TableCell>{vistoria.modelo}</TableCell>
                       <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
                       <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
-                      <TableCell>{vistoria.pagamento}</TableCell>
+                      <TableCell>
+                        <PagamentoDropdown 
+                          pagamento={vistoria.pagamento} 
+                          onPagamentoChange={novoPagamento => handlePagamentoChange(vistoria.id, novoPagamento)} 
+                        />
+                      </TableCell>
                       <TableCell>
                         <SituacaoDropdown situacao={vistoria.situacao} onSituacaoChange={novaSituacao => handleSituacaoChange(vistoria.id, novaSituacao)} />
                       </TableCell>
