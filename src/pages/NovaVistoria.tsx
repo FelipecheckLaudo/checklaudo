@@ -309,13 +309,7 @@ export default function NovaVistoria() {
               })} disabled={isSaving} />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="liberador">Liberador</Label>
-                <Input id="liberador" placeholder="Nome do liberador" value={formData.liberador} onChange={e => setFormData({
-                ...formData,
-                liberador: e.target.value.toUpperCase()
-              })} disabled={isSaving} />
-              </div>
+              
             </div>
           </CardContent>
         </Card>
