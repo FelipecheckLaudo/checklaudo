@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getClientes, saveVistoria, saveCliente, type Cliente } from "@/lib/database";
+import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores, type Cliente, type Digitador, type Visitador } from "@/lib/database";
 import { toast } from "sonner";
 export default function NovaVistoria() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [digitadores, setDigitadores] = useState<Digitador[]>([]);
+  const [vistoriadores, setVistoriadores] = useState<Visitador[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,18 +30,24 @@ export default function NovaVistoria() {
     cpf: ""
   });
   useEffect(() => {
-    const loadClientes = async () => {
+    const loadData = async () => {
       try {
         setIsLoading(true);
-        const data = await getClientes();
-        setClientes(data);
+        const [clientesData, digitadoresData, vistoriadoresData] = await Promise.all([
+          getClientes(),
+          getDigitadores(),
+          getVisitadores()
+        ]);
+        setClientes(clientesData);
+        setDigitadores(digitadoresData);
+        setVistoriadores(vistoriadoresData);
       } catch (error: any) {
-        toast.error(error.message || "Erro ao carregar clientes");
+        toast.error(error.message || "Erro ao carregar dados");
       } finally {
         setIsLoading(false);
       }
     };
-    loadClientes();
+    loadData();
   }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -303,13 +311,57 @@ export default function NovaVistoria() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="digitador">Digitador</Label>
-                <Input id="digitador" placeholder="Nome do digitador" value={formData.digitador} onChange={e => setFormData({
-                ...formData,
-                digitador: e.target.value.toUpperCase()
-              })} disabled={isSaving} />
+                {isLoading ? (
+                  <div className="flex items-center gap-2 py-2 text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Carregando...</span>
+                  </div>
+                ) : digitadores.length === 0 ? (
+                  <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                    Nenhum digitador cadastrado
+                  </div>
+                ) : (
+                  <Select value={formData.digitador} onValueChange={value => setFormData({ ...formData, digitador: value })} disabled={isSaving}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um digitador" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {digitadores.map(digitador => (
+                        <SelectItem key={digitador.id} value={digitador.nome}>
+                          {digitador.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               
-              
+              <div className="space-y-2">
+                <Label htmlFor="liberador">Vistoriador</Label>
+                {isLoading ? (
+                  <div className="flex items-center gap-2 py-2 text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Carregando...</span>
+                  </div>
+                ) : vistoriadores.length === 0 ? (
+                  <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                    Nenhum vistoriador cadastrado
+                  </div>
+                ) : (
+                  <Select value={formData.liberador} onValueChange={value => setFormData({ ...formData, liberador: value })} disabled={isSaving}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um vistoriador" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vistoriadores.map(vistoriador => (
+                        <SelectItem key={vistoriador.id} value={vistoriador.nome}>
+                          {vistoriador.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
