@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Vistoria } from "@/lib/database";
@@ -169,22 +170,12 @@ export function EditVistoriaDialog({
                 <Label htmlFor="edit-pagamento">
                   Pagamento <span className="text-destructive">*</span>
                 </Label>
-                <Select
+                <PagamentoSelect
                   value={formData.pagamento}
                   onValueChange={(value) => setFormData({ ...formData, pagamento: value })}
                   disabled={isSaving}
-                  required
-                >
-                  <SelectTrigger id="edit-pagamento">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DINHEIRO">Dinheiro</SelectItem>
-                    <SelectItem value="PIX">PIX</SelectItem>
-                    <SelectItem value="CARTAO">Cartão</SelectItem>
-                    <SelectItem value="BOLETO">Boleto</SelectItem>
-                  </SelectContent>
-                </Select>
+                  placeholder="Selecione"
+                />
               </div>
 
               <div className="space-y-2">

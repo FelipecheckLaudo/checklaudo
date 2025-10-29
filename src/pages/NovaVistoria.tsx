@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores, type Cliente, type Digitador, type Visitador } from "@/lib/database";
+import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { toast } from "sonner";
 export default function NovaVistoria() {
   const navigate = useNavigate();
@@ -161,20 +162,11 @@ export default function NovaVistoria() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pagamento">Forma de Pagamento</Label>
-                <Select value={formData.pagamento} onValueChange={value => setFormData({
-                ...formData,
-                pagamento: value
-              })} disabled={isSaving}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DÉBITO">Débito</SelectItem>
-                    <SelectItem value="CRÉDITO">Crédito</SelectItem>
-                    <SelectItem value="PIX">PIX</SelectItem>
-                    <SelectItem value="DINHEIRO">Dinheiro</SelectItem>
-                  </SelectContent>
-                </Select>
+                <PagamentoSelect
+                  value={formData.pagamento}
+                  onValueChange={value => setFormData({ ...formData, pagamento: value })}
+                  disabled={isSaving}
+                />
               </div>
               
               <div className="space-y-2">
