@@ -132,7 +132,7 @@ export default function Vistorias() {
       </div>
 
       <Link to="/nova-vistoria">
-        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg text-lg gap-3 py-6">
+        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg gap-3 text-stone-100 bg-slate-50 text-xl font-medium px-0 py-0 my-0 mx-0">
           <Plus className="h-6 w-6" />
           Nova Vistoria
         </Button>
@@ -162,7 +162,7 @@ export default function Vistorias() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-stone-300">
                     <TableHead>Data</TableHead>
                     <TableHead>Placa</TableHead>
                     <TableHead>Modelo</TableHead>
@@ -176,28 +176,28 @@ export default function Vistorias() {
                 </TableHeader>
                 <TableBody>
                   {filteredVistorias.map(vistoria => <TableRow key={vistoria.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium bg-stone-100">
                         {formatDate(vistoria.criadoEm || vistoria.created_at || "")}
                       </TableCell>
-                      <TableCell className="font-mono font-semibold mx-0 px-px">
+                      <TableCell className="font-mono font-semibold mx-0 px-px bg-stone-100">
                         {vistoria.placa}
                       </TableCell>
-                      <TableCell>{vistoria.modelo}</TableCell>
-                      <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
-                      <TableCell>
+                      <TableCell className="bg-stone-100">{vistoria.modelo}</TableCell>
+                      <TableCell className="bg-stone-100">{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
+                      <TableCell className="bg-stone-100">
                         <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded">
                           {vistoria.tipo}
                         </span>
                       </TableCell>
-                      <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
-                      <TableCell>
+                      <TableCell className="bg-stone-100">{formatCurrency(vistoria.valor)}</TableCell>
+                      <TableCell className="bg-stone-100">
                         <PagamentoDropdown pagamento={vistoria.pagamento} onPagamentoChange={novoPagamento => handlePagamentoChange(vistoria.id, novoPagamento)} />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="bg-stone-100">
                         <SituacaoDropdown situacao={vistoria.situacao} onSituacaoChange={novaSituacao => handleSituacaoChange(vistoria.id, novaSituacao)} />
                       </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex gap-2 justify-end">
+                      <TableCell className="text-right bg-stone-100">
+                        <div className="flex gap-2 justify-end bg-purple-50">
                           <Button variant="ghost" size="icon" onClick={() => {
                       setSelectedVistoria(vistoria);
                       setEditDialogOpen(true);
@@ -207,7 +207,7 @@ export default function Vistorias() {
                           <Button variant="ghost" size="icon" onClick={() => {
                       setSelectedVistoria(vistoria);
                       setDeleteDialogOpen(true);
-                    }}>
+                    }} className="text-red-100 text-center text-base">
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
