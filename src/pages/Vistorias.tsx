@@ -132,7 +132,7 @@ export default function Vistorias() {
       </div>
 
       <Link to="/nova-vistoria">
-        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg gap-3 text-stone-100 text-xl px-0 py-0 mx-0 bg-violet-900 hover:bg-violet-800 text-center rounded-full font-bold my-[12px]">
+        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg gap-3 text-stone-100 text-xl bg-violet-900 hover:bg-violet-800 text-center rounded-full font-bold my-[12px] mx-[5px] px-[10px] py-[5px]">
           <Plus className="h-6 w-6" />
           Nova Vistoria
         </Button>
