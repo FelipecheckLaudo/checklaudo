@@ -38,6 +38,7 @@ export interface Vistoria {
   pagamento: string;
   valor: string;
   situacao: string;
+  tipo: string;
   cliente_id: string | null;
   clienteId?: string; // Para compatibilidade
   cliente_nome: string;
@@ -272,6 +273,7 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
       pagamento: vistoria.pagamento,
       valor: Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')),
       situacao: vistoria.situacao,
+      tipo: vistoria.tipo,
       cliente_id: vistoria.clienteId || vistoria.cliente_id,
       cliente_nome: vistoria.clienteNome || vistoria.cliente_nome,
       cliente_cpf: vistoria.cliente_cpf,
@@ -301,6 +303,7 @@ export const updateVistoria = async (id: string, vistoria: Partial<Vistoria>): P
   if (vistoria.pagamento !== undefined) updateData.pagamento = vistoria.pagamento;
   if (vistoria.valor !== undefined) updateData.valor = Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'));
   if (vistoria.situacao !== undefined) updateData.situacao = vistoria.situacao;
+  if (vistoria.tipo !== undefined) updateData.tipo = vistoria.tipo;
   if (vistoria.cliente_nome !== undefined) updateData.cliente_nome = vistoria.cliente_nome;
   if (vistoria.cliente_cpf !== undefined) updateData.cliente_cpf = vistoria.cliente_cpf;
   if (vistoria.digitador !== undefined) updateData.digitador = vistoria.digitador;

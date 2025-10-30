@@ -118,6 +118,7 @@ export type Database = {
           pagamento: string
           placa: string
           situacao: string
+          tipo: string
           updated_at: string | null
           valor: number
         }
@@ -134,6 +135,7 @@ export type Database = {
           pagamento: string
           placa: string
           situacao?: string
+          tipo?: string
           updated_at?: string | null
           valor: number
         }
@@ -150,6 +152,7 @@ export type Database = {
           pagamento?: string
           placa?: string
           situacao?: string
+          tipo?: string
           updated_at?: string | null
           valor?: number
         }

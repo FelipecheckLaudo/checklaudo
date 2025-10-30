@@ -168,6 +168,7 @@ export default function Vistorias() {
                     <TableHead>Placa</TableHead>
                     <TableHead>Modelo</TableHead>
                     <TableHead>Cliente</TableHead>
+                    <TableHead>Tipo</TableHead>
                     <TableHead>Valor</TableHead>
                     <TableHead>Pagamento</TableHead>
                     <TableHead>Situação</TableHead>
@@ -184,6 +185,11 @@ export default function Vistorias() {
                       </TableCell>
                       <TableCell>{vistoria.modelo}</TableCell>
                       <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
+                      <TableCell>
+                        <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded">
+                          {vistoria.tipo}
+                        </span>
+                      </TableCell>
                       <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
                       <TableCell>
                         <PagamentoDropdown 

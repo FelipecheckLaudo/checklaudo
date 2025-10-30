@@ -43,6 +43,7 @@ export function EditVistoriaDialog({
     pagamento: "",
     valor: "",
     situacao: "",
+    tipo: "",
     cliente_nome: "",
     cliente_cpf: "",
     digitador: "",
@@ -57,6 +58,7 @@ export function EditVistoriaDialog({
         pagamento: vistoria.pagamento || "",
         valor: vistoria.valor || "",
         situacao: vistoria.situacao || "PENDENTE",
+        tipo: vistoria.tipo || "ECV/TRANSFERENCIA",
         cliente_nome: vistoria.cliente_nome || vistoria.clienteNome || "",
         cliente_cpf: vistoria.cliente_cpf || "",
         digitador: vistoria.digitador || "",
@@ -202,29 +204,55 @@ export function EditVistoriaDialog({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="edit-situacao">
-                Situação <span className="text-destructive">*</span>
-              </Label>
-              <Select
-                value={formData.situacao}
-                onValueChange={(value) => setFormData({ ...formData, situacao: value })}
-                disabled={isSaving}
-                required
-              >
-                <SelectTrigger id="edit-situacao">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PENDENTE">Pendente</SelectItem>
-                  <SelectItem value="APROVADO">Aprovado</SelectItem>
-                  <SelectItem value="REPROVADO">Reprovado</SelectItem>
-                  <SelectItem value="APROVADO COM APONTAMENTOS">Aprovado com Apontamentos</SelectItem>
-                  <SelectItem value="SUSPEITO ADULTERAÇÃO">Suspeito Adulteração</SelectItem>
-                  <SelectItem value="CONFORME">Conforme</SelectItem>
-                  <SelectItem value="NÃO CONFORME">Não Conforme</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-tipo">
+                  Tipo de Laudo <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.tipo}
+                  onValueChange={(value) => setFormData({ ...formData, tipo: value })}
+                  disabled={isSaving}
+                  required
+                >
+                  <SelectTrigger id="edit-tipo">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ECV/TRANSFERENCIA">ECV/Transferência</SelectItem>
+                    <SelectItem value="REVISTORIA/INFRAÇÃO DE TRÂNSITO">Revistoria/Infração de Trânsito</SelectItem>
+                    <SelectItem value="CAUTELAR">Cautelar</SelectItem>
+                    <SelectItem value="VISTORIA PRÉVIA">Vistoria Prévia</SelectItem>
+                    <SelectItem value="SEGURADORA">Seguradora</SelectItem>
+                    <SelectItem value="PESQUISA">Pesquisa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-situacao">
+                  Situação <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={formData.situacao}
+                  onValueChange={(value) => setFormData({ ...formData, situacao: value })}
+                  disabled={isSaving}
+                  required
+                >
+                  <SelectTrigger id="edit-situacao">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PENDENTE">Pendente</SelectItem>
+                    <SelectItem value="APROVADO">Aprovado</SelectItem>
+                    <SelectItem value="REPROVADO">Reprovado</SelectItem>
+                    <SelectItem value="APROVADO COM APONTAMENTOS">Aprovado com Apontamentos</SelectItem>
+                    <SelectItem value="SUSPEITO ADULTERAÇÃO">Suspeito Adulteração</SelectItem>
+                    <SelectItem value="CONFORME">Conforme</SelectItem>
+                    <SelectItem value="NÃO CONFORME">Não Conforme</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
