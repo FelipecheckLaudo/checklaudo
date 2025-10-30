@@ -162,7 +162,7 @@ export default function Vistorias() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-stone-300">
+                  <TableRow className="bg-violet-800">
                     <TableHead>Data</TableHead>
                     <TableHead>Placa</TableHead>
                     <TableHead>Modelo</TableHead>
