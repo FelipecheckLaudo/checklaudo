@@ -72,7 +72,6 @@ export default function Vistorias() {
       toast.error(error.message || "Erro ao atualizar situação");
     }
   };
-
   const handlePagamentoChange = async (vistoriaId: string, novoPagamento: string) => {
     try {
       await updateVistoria(vistoriaId, {
@@ -180,7 +179,7 @@ export default function Vistorias() {
                       <TableCell className="font-medium">
                         {formatDate(vistoria.criadoEm || vistoria.created_at || "")}
                       </TableCell>
-                      <TableCell className="font-mono font-semibold">
+                      <TableCell className="font-mono font-semibold mx-0 px-px">
                         {vistoria.placa}
                       </TableCell>
                       <TableCell>{vistoria.modelo}</TableCell>
@@ -192,10 +191,7 @@ export default function Vistorias() {
                       </TableCell>
                       <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
                       <TableCell>
-                        <PagamentoDropdown 
-                          pagamento={vistoria.pagamento} 
-                          onPagamentoChange={novoPagamento => handlePagamentoChange(vistoria.id, novoPagamento)} 
-                        />
+                        <PagamentoDropdown pagamento={vistoria.pagamento} onPagamentoChange={novoPagamento => handlePagamentoChange(vistoria.id, novoPagamento)} />
                       </TableCell>
                       <TableCell>
                         <SituacaoDropdown situacao={vistoria.situacao} onSituacaoChange={novaSituacao => handleSituacaoChange(vistoria.id, novaSituacao)} />
