@@ -113,7 +113,7 @@ export default function Vistorias() {
   };
   return <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col gap-4">
-        <h1 className="font-bold text-foreground text-2xl text-left">Vistorias Diárias</h1>
+        <h1 className="text-3xl font-bold text-foreground">Vistorias Diárias</h1>
         
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -132,7 +132,7 @@ export default function Vistorias() {
       </div>
 
       <Link to="/nova-vistoria">
-        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg gap-3 text-stone-100 bg-violet-900 hover:bg-violet-800 text-center my-[12px] mx-[5px] px-[10px] py-[5px] rounded-3xl text-lg font-medium">
+        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg text-lg gap-3 py-6">
           <Plus className="h-6 w-6" />
           Nova Vistoria
         </Button>
@@ -162,7 +162,7 @@ export default function Vistorias() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-violet-800">
+                  <TableRow>
                     <TableHead>Data</TableHead>
                     <TableHead>Placa</TableHead>
                     <TableHead>Modelo</TableHead>
@@ -176,28 +176,28 @@ export default function Vistorias() {
                 </TableHeader>
                 <TableBody>
                   {filteredVistorias.map(vistoria => <TableRow key={vistoria.id}>
-                      <TableCell className="font-medium bg-stone-100">
+                      <TableCell className="font-medium">
                         {formatDate(vistoria.criadoEm || vistoria.created_at || "")}
                       </TableCell>
-                      <TableCell className="font-mono font-semibold mx-0 px-px bg-stone-100">
+                      <TableCell className="font-mono font-semibold mx-0 px-px">
                         {vistoria.placa}
                       </TableCell>
-                      <TableCell className="bg-stone-100">{vistoria.modelo}</TableCell>
-                      <TableCell className="bg-stone-100">{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
-                      <TableCell className="bg-stone-100">
+                      <TableCell>{vistoria.modelo}</TableCell>
+                      <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
+                      <TableCell>
                         <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded">
                           {vistoria.tipo}
                         </span>
                       </TableCell>
-                      <TableCell className="bg-stone-100">{formatCurrency(vistoria.valor)}</TableCell>
-                      <TableCell className="bg-stone-100">
+                      <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
+                      <TableCell>
                         <PagamentoDropdown pagamento={vistoria.pagamento} onPagamentoChange={novoPagamento => handlePagamentoChange(vistoria.id, novoPagamento)} />
                       </TableCell>
-                      <TableCell className="bg-stone-100">
+                      <TableCell>
                         <SituacaoDropdown situacao={vistoria.situacao} onSituacaoChange={novaSituacao => handleSituacaoChange(vistoria.id, novaSituacao)} />
                       </TableCell>
-                      <TableCell className="text-right bg-stone-100">
-                        <div className="flex gap-2 justify-end bg-purple-50">
+                      <TableCell className="text-right">
+                        <div className="flex gap-2 justify-end">
                           <Button variant="ghost" size="icon" onClick={() => {
                       setSelectedVistoria(vistoria);
                       setEditDialogOpen(true);
@@ -207,7 +207,7 @@ export default function Vistorias() {
                           <Button variant="ghost" size="icon" onClick={() => {
                       setSelectedVistoria(vistoria);
                       setDeleteDialogOpen(true);
-                    }} className="text-red-100 text-center text-base">
+                    }}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>

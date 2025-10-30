@@ -31,7 +31,7 @@ export default function Layout({
           <nav className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <ClipboardList className="h-6 w-6" />
-              <span className="font-bold text-2xl">Checklaudo</span>
+              <span className="text-xl font-bold">Checklaudo</span>
             </div>
             
             <div className="flex items-center gap-2">
