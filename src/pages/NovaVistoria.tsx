@@ -35,11 +35,7 @@ export default function NovaVistoria() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const [clientesData, digitadoresData, vistoriadoresData] = await Promise.all([
-          getClientes(),
-          getDigitadores(),
-          getVisitadores()
-        ]);
+        const [clientesData, digitadoresData, vistoriadoresData] = await Promise.all([getClientes(), getDigitadores(), getVisitadores()]);
         setClientes(clientesData);
         setDigitadores(digitadoresData);
         setVistoriadores(vistoriadoresData);
@@ -94,7 +90,6 @@ export default function NovaVistoria() {
         toast.error("Informe um valor válido para a vistoria");
         return;
       }
-
       await saveVistoria({
         modelo: formData.modelo,
         placa: formData.placa.toUpperCase(),
@@ -144,7 +139,7 @@ export default function NovaVistoria() {
           <CardHeader>
             <CardTitle>Informações do Veículo</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 bg-slate-50">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="modelo">
@@ -215,11 +210,10 @@ export default function NovaVistoria() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pagamento">Forma de Pagamento</Label>
-                <PagamentoSelect
-                  value={formData.pagamento}
-                  onValueChange={value => setFormData({ ...formData, pagamento: value })}
-                  disabled={isSaving}
-                />
+                <PagamentoSelect value={formData.pagamento} onValueChange={value => setFormData({
+                ...formData,
+                pagamento: value
+              })} disabled={isSaving} />
               </div>
               
               <div className="space-y-2">
@@ -335,56 +329,46 @@ export default function NovaVistoria() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="digitador">Digitador</Label>
-                {isLoading ? (
-                  <div className="flex items-center gap-2 py-2 text-muted-foreground">
+                {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Carregando...</span>
-                  </div>
-                ) : digitadores.length === 0 ? (
-                  <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                  </div> : digitadores.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
                     Nenhum digitador cadastrado
-                  </div>
-                ) : (
-                  <Select value={formData.digitador} onValueChange={value => setFormData({ ...formData, digitador: value })} disabled={isSaving}>
+                  </div> : <Select value={formData.digitador} onValueChange={value => setFormData({
+                ...formData,
+                digitador: value
+              })} disabled={isSaving}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um digitador" />
                     </SelectTrigger>
                     <SelectContent>
-                      {digitadores.map(digitador => (
-                        <SelectItem key={digitador.id} value={digitador.nome}>
+                      {digitadores.map(digitador => <SelectItem key={digitador.id} value={digitador.nome}>
                           {digitador.nome}
-                        </SelectItem>
-                      ))}
+                        </SelectItem>)}
                     </SelectContent>
-                  </Select>
-                )}
+                  </Select>}
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="liberador">Vistoriador</Label>
-                {isLoading ? (
-                  <div className="flex items-center gap-2 py-2 text-muted-foreground">
+                {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Carregando...</span>
-                  </div>
-                ) : vistoriadores.length === 0 ? (
-                  <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                  </div> : vistoriadores.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
                     Nenhum vistoriador cadastrado
-                  </div>
-                ) : (
-                  <Select value={formData.liberador} onValueChange={value => setFormData({ ...formData, liberador: value })} disabled={isSaving}>
+                  </div> : <Select value={formData.liberador} onValueChange={value => setFormData({
+                ...formData,
+                liberador: value
+              })} disabled={isSaving}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um vistoriador" />
                     </SelectTrigger>
                     <SelectContent>
-                      {vistoriadores.map(vistoriador => (
-                        <SelectItem key={vistoriador.id} value={vistoriador.nome}>
+                      {vistoriadores.map(vistoriador => <SelectItem key={vistoriador.id} value={vistoriador.nome}>
                           {vistoriador.nome}
-                        </SelectItem>
-                      ))}
+                        </SelectItem>)}
                     </SelectContent>
-                  </Select>
-                )}
+                  </Select>}
               </div>
             </div>
           </CardContent>
