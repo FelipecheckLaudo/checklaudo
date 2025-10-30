@@ -113,7 +113,7 @@ export default function Vistorias() {
   };
   return <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold text-foreground">Vistorias Diárias</h1>
+        <h1 className="font-bold text-foreground text-2xl text-left">Vistorias Diárias</h1>
         
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -132,7 +132,7 @@ export default function Vistorias() {
       </div>
 
       <Link to="/nova-vistoria">
-        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg gap-3 text-stone-100 bg-slate-50 text-xl font-medium px-0 py-0 my-0 mx-0">
+        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg gap-3 text-stone-100 text-xl px-0 py-0 mx-0 bg-violet-900 hover:bg-violet-800 my-[8px] text-center rounded-full font-bold">
           <Plus className="h-6 w-6" />
           Nova Vistoria
         </Button>
