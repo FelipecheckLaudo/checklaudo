@@ -6,6 +6,7 @@ export const FORMAS_PAGAMENTO = [
   { value: "DÉBITO", label: "💳 Débito" },
   { value: "CRÉDITO", label: "💳 Crédito" },
   { value: "BOLETO", label: "📄 Boleto" },
+  { value: "FATURADO/PENDENTE", label: "‼️ FATURADO/PENDENTE" },
 ] as const;
 
 interface PagamentoSelectProps {
