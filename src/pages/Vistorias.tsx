@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Plus, Upload, Download, FileText, Trash2, Loader2, Pencil } from "lucide-react";
+import { Search, Plus, Upload, Download, FileText, Trash2, Loader2, Pencil, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { getVistorias, deleteVistoria, updateVistoria, type Vistoria } from "@/lib/database";
 import { toast } from "sonner";
 import { EditVistoriaDialog } from "@/components/EditVistoriaDialog";
 import { SituacaoDropdown } from "@/components/SituacaoDropdown";
 import { PagamentoDropdown } from "@/components/PagamentoDropdown";
 import { exportVistoriasToPDF } from "@/lib/pdfExport";
+import { cn } from "@/lib/utils";
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
   const [vistorias, setVistorias] = useState<Vistoria[]>([]);
@@ -20,6 +24,8 @@ export default function Vistorias() {
   const [selectedVistoria, setSelectedVistoria] = useState<Vistoria | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [dataInicial, setDataInicial] = useState<Date>();
+  const [dataFinal, setDataFinal] = useState<Date>();
   useEffect(() => {
     loadVistorias();
   }, []);
@@ -96,7 +102,24 @@ export default function Vistorias() {
       console.error(error);
     }
   };
-  const filteredVistorias = vistorias.filter(v => v.placa.toLowerCase().includes(searchTerm.toLowerCase()) || v.modelo.toLowerCase().includes(searchTerm.toLowerCase()) || (v.clienteNome || v.cliente_nome || "").toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredVistorias = vistorias.filter(v => {
+    const matchesSearch = v.placa.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      v.modelo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (v.clienteNome || v.cliente_nome || "").toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (!matchesSearch) return false;
+    
+    const vistoriaDate = new Date(v.criadoEm || v.created_at || "");
+    
+    if (dataInicial && vistoriaDate < dataInicial) return false;
+    if (dataFinal) {
+      const endOfDay = new Date(dataFinal);
+      endOfDay.setHours(23, 59, 59, 999);
+      if (vistoriaDate > endOfDay) return false;
+    }
+    
+    return true;
+  });
   const formatDate = (isoDate: string) => {
     return new Date(isoDate).toLocaleDateString("pt-BR", {
       day: "2-digit",
@@ -131,12 +154,77 @@ export default function Vistorias() {
         </div>
       </div>
 
-      <Link to="/nova-vistoria">
-        <Button size="lg" className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg text-lg gap-3 py-6">
-          <Plus className="h-6 w-6" />
-          Nova Vistoria
-        </Button>
-      </Link>
+      <div className="flex flex-col md:flex-row gap-3">
+        <Link to="/nova-vistoria" className="flex-1 md:flex-initial">
+          <Button size="lg" className="w-full bg-gradient-primary hover:opacity-90 transition-opacity shadow-lg text-lg gap-3 py-6">
+            <Plus className="h-6 w-6" />
+            Nova Vistoria
+          </Button>
+        </Link>
+
+        <div className="flex flex-wrap gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "gap-2 justify-start text-left font-normal",
+                  !dataInicial && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="h-4 w-4" />
+                {dataInicial ? format(dataInicial, "dd/MM/yy") : "Data Inicial"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dataInicial}
+                onSelect={setDataInicial}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "gap-2 justify-start text-left font-normal",
+                  !dataFinal && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="h-4 w-4" />
+                {dataFinal ? format(dataFinal, "dd/MM/yy") : "Data Final"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dataFinal}
+                onSelect={setDataFinal}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+
+          {(dataInicial || dataFinal) && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setDataInicial(undefined);
+                setDataFinal(undefined);
+              }}
+              className="gap-2"
+            >
+              Limpar Filtros
+            </Button>
+          )}
+        </div>
+      </div>
 
       {isLoading ? <Card className="p-12 text-center border-2 border-dashed">
           <div className="flex flex-col items-center gap-4 text-muted-foreground">
