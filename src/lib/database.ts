@@ -265,6 +265,8 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
 };
 
 export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 'created_at'>): Promise<Vistoria> => {
+  const clienteId = vistoria.clienteId || vistoria.cliente_id;
+  
   const { data, error } = await (supabase as any)
     .from('vistorias')
     .insert({
@@ -274,7 +276,7 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
       valor: Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')),
       situacao: vistoria.situacao,
       tipo: vistoria.tipo,
-      cliente_id: vistoria.clienteId || vistoria.cliente_id,
+      cliente_id: clienteId || null,
       cliente_nome: vistoria.clienteNome || vistoria.cliente_nome,
       cliente_cpf: vistoria.cliente_cpf,
       digitador: vistoria.digitador,

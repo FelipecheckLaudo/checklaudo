@@ -96,7 +96,7 @@ export default function NovaVistoria() {
           return;
         }
         // Cliente particular não é cadastrado no sistema
-        clienteId = "particular";
+        clienteId = null as any;
         clienteNome = novoCliente.nome;
         clienteCpf = novoCliente.cpf;
       }
