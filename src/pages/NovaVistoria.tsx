@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores, type Cliente, type Digitador, type Visitador } from "@/lib/database";
 import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ export default function NovaVistoria() {
     digitador: "",
     liberador: ""
   });
+  const [tipoCliente, setTipoCliente] = useState<"cadastrado" | "novo" | "particular">("cadastrado");
   const [novoCliente, setNovoCliente] = useState({
     nome: "",
     cpf: ""
@@ -55,14 +57,26 @@ export default function NovaVistoria() {
       let clienteNome = "";
       let clienteCpf = "";
 
-      // Se não selecionou cliente existente, verifica se preencheu dados do novo cliente
-      if (!clienteId) {
-        if (!novoCliente.nome || !novoCliente.cpf) {
-          toast.error("Selecione um cliente ou preencha os dados do novo cliente");
+      // Valida dados do cliente baseado no tipo selecionado
+      if (tipoCliente === "cadastrado") {
+        if (!formData.clienteId) {
+          toast.error("Selecione um cliente cadastrado");
           return;
         }
-
-        // Cria novo cliente
+        const cliente = clientes.find(c => c.id === formData.clienteId);
+        if (!cliente) {
+          toast.error("Cliente não encontrado");
+          return;
+        }
+        clienteId = cliente.id;
+        clienteNome = cliente.nome;
+        clienteCpf = cliente.cpf;
+      } else if (tipoCliente === "novo") {
+        if (!novoCliente.nome || !novoCliente.cpf) {
+          toast.error("Preencha os dados do novo cliente");
+          return;
+        }
+        // Cria novo cliente no sistema
         const clienteCriado = await saveCliente({
           nome: novoCliente.nome,
           cpf: novoCliente.cpf,
@@ -76,14 +90,15 @@ export default function NovaVistoria() {
         const novaLista = await getClientes();
         setClientes(novaLista);
         toast.success("Cliente cadastrado com sucesso!");
-      } else {
-        const cliente = clientes.find(c => c.id === clienteId);
-        if (!cliente) {
-          toast.error("Cliente não encontrado");
+      } else if (tipoCliente === "particular") {
+        if (!novoCliente.nome || !novoCliente.cpf) {
+          toast.error("Preencha os dados do cliente particular");
           return;
         }
-        clienteNome = cliente.nome;
-        clienteCpf = cliente.cpf;
+        // Cliente particular não é cadastrado no sistema
+        clienteId = "particular";
+        clienteNome = novoCliente.nome;
+        clienteCpf = novoCliente.cpf;
       }
       // Garante que o valor seja válido (não vazio)
       if (!formData.valor || formData.valor === "R$ 0,00") {
@@ -242,80 +257,87 @@ export default function NovaVistoria() {
             <CardTitle>Cliente</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="cliente">Selecionar Cliente Existente</Label>
-              {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Carregando clientes...</span>
-                </div> : clientes.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
-                  Nenhum cliente cadastrado. Preencha os dados abaixo para cadastrar um novo cliente.
-                </div> : <Select value={formData.clienteId} onValueChange={value => {
-              setFormData({
-                ...formData,
-                clienteId: value
-              });
-              if (value) {
-                setNovoCliente({
-                  nome: "",
-                  cpf: ""
-                });
-              }
-            }} disabled={isSaving}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientes.map(cliente => <SelectItem key={cliente.id} value={cliente.id}>
-                        {cliente.nome} - {cliente.cpf}
-                      </SelectItem>)}
-                  </SelectContent>
-                </Select>}
+            <div className="space-y-3">
+              <Label>Tipo de Cliente</Label>
+              <RadioGroup value={tipoCliente} onValueChange={(value: "cadastrado" | "novo" | "particular") => {
+                setTipoCliente(value);
+                setFormData({ ...formData, clienteId: "" });
+                setNovoCliente({ nome: "", cpf: "" });
+              }} disabled={isSaving}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cadastrado" id="cadastrado" />
+                  <Label htmlFor="cadastrado" className="font-normal cursor-pointer">Cliente Cadastrado</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="novo" id="novo" />
+                  <Label htmlFor="novo" className="font-normal cursor-pointer">Novo Cliente (Cadastrar no Sistema)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="particular" id="particular" />
+                  <Label htmlFor="particular" className="font-normal cursor-pointer">Cliente Particular (Apenas para Organização)</Label>
+                </div>
+              </RadioGroup>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Ou cadastrar novo cliente</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tipoCliente === "cadastrado" && (
               <div className="space-y-2">
-                <Label htmlFor="novoClienteNome">Nome do Cliente</Label>
-                <Input id="novoClienteNome" placeholder="Ex: João Silva" value={novoCliente.nome} onChange={e => {
-                const value = e.target.value.toUpperCase();
-                setNovoCliente({
-                  ...novoCliente,
-                  nome: value
-                });
-                if (value && formData.clienteId) {
-                  setFormData({
-                    ...formData,
-                    clienteId: ""
-                  });
-                }
-              }} disabled={!!formData.clienteId || isSaving} />
+                <Label htmlFor="cliente">Selecionar Cliente <span className="text-destructive">*</span></Label>
+                {isLoading ? (
+                  <div className="flex items-center gap-2 py-2 text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Carregando clientes...</span>
+                  </div>
+                ) : clientes.length === 0 ? (
+                  <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                    Nenhum cliente cadastrado. Selecione outra opção acima.
+                  </div>
+                ) : (
+                  <Select value={formData.clienteId} onValueChange={value => setFormData({ ...formData, clienteId: value })} disabled={isSaving}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientes.map(cliente => (
+                        <SelectItem key={cliente.id} value={cliente.id}>
+                          {cliente.nome} - {cliente.cpf}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="novoClienteCpf">CPF do Cliente</Label>
-                <Input id="novoClienteCpf" placeholder="123.456.789-00" value={novoCliente.cpf} onChange={e => {
-                const value = formatCPF(e.target.value);
-                setNovoCliente({
-                  ...novoCliente,
-                  cpf: value
-                });
-                if (value && formData.clienteId) {
-                  setFormData({
-                    ...formData,
-                    clienteId: ""
-                  });
-                }
-              }} maxLength={14} disabled={!!formData.clienteId || isSaving} />
+            {(tipoCliente === "novo" || tipoCliente === "particular") && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="novoClienteNome">
+                    Nome do Cliente <span className="text-destructive">*</span>
+                  </Label>
+                  <Input 
+                    id="novoClienteNome" 
+                    placeholder="Ex: João Silva" 
+                    value={novoCliente.nome} 
+                    onChange={e => setNovoCliente({ ...novoCliente, nome: e.target.value.toUpperCase() })} 
+                    disabled={isSaving} 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="novoClienteCpf">
+                    CPF do Cliente <span className="text-destructive">*</span>
+                  </Label>
+                  <Input 
+                    id="novoClienteCpf" 
+                    placeholder="123.456.789-00" 
+                    value={novoCliente.cpf} 
+                    onChange={e => setNovoCliente({ ...novoCliente, cpf: formatCPF(e.target.value) })} 
+                    maxLength={14} 
+                    disabled={isSaving} 
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
