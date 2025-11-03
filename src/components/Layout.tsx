@@ -49,8 +49,7 @@ export default function Layout({
               <Button
                 asChild
                 variant="ghost"
-                size="icon"
-                className="hover:bg-white/10"
+                className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1"
               >
                 <a 
                   href="https://wa.me/5511994001179" 
@@ -59,6 +58,7 @@ export default function Layout({
                   aria-label="Suporte WhatsApp"
                 >
                   <MessageCircle className="h-5 w-5" />
+                  <span className="text-xs">Suporte</span>
                 </a>
               </Button>
               <ThemeToggle />
