@@ -46,13 +46,13 @@ export default function Layout({
                     </Link>;
               })}
               </div>
-              <Button
+              	<Button
                 asChild
                 variant="ghost"
                 className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1"
               >
                 <a 
-                  href="https://api.whatsapp.com/send?phone=5511994001179" 
+                  href="https://wa.me/5511994001179" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   aria-label="Suporte WhatsApp"
