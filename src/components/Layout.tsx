@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { ClipboardList, BarChart3, Users, Settings, MessageCircle } from "lucide-react";
+import { ClipboardList, BarChart3, Users, Settings, MessageCircle, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,10 @@ const navItems = [{
   path: "/analises",
   label: "Análises",
   icon: BarChart3
+}, {
+  path: "/dashboard",
+  label: "Gerenciamento",
+  icon: LayoutDashboard
 }, {
   path: "/cadastros",
   label: "Cadastros",

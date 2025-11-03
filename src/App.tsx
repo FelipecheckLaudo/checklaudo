@@ -9,6 +9,7 @@ import Vistorias from "./pages/Vistorias";
 import NovaVistoria from "./pages/NovaVistoria";
 import Cadastros from "./pages/Cadastros";
 import Analises from "./pages/Analises";
+import Dashboard from "./pages/Dashboard";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/nova-vistoria" element={<NovaVistoria />} />
                 <Route path="/cadastros" element={<Cadastros />} />
                 <Route path="/analises" element={<Analises />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/configuracoes" element={<Configuracoes />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
