@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { ClipboardList, BarChart3, Users, Settings } from "lucide-react";
+import { ClipboardList, BarChart3, Users, Settings, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle";
+import { Button } from "@/components/ui/button";
 const navItems = [{
   path: "/",
   label: "Vistorias",
@@ -45,6 +46,21 @@ export default function Layout({
                     </Link>;
               })}
               </div>
+              <Button
+                asChild
+                variant="ghost"
+                size="icon"
+                className="hover:bg-white/10"
+              >
+                <a 
+                  href="https://wa.me/5511999999999" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Suporte WhatsApp"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                </a>
+              </Button>
               <ThemeToggle />
             </div>
           </nav>
