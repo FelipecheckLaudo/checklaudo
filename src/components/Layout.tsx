@@ -26,6 +26,25 @@ export default function Layout({
   children: React.ReactNode;
 }) {
   const location = useLocation();
+
+  // Open WhatsApp without relying on api.whatsapp.com and provide a desktop fallback
+  const handleWhatsAppClick = (e: any) => {
+    e.preventDefault();
+    const phone = "5511994001179";
+    const appUrl = `whatsapp://send?phone=${phone}`;
+    const webUrl = `https://web.whatsapp.com/send?phone=${phone}`;
+
+    const newWin = window.open(appUrl, "_blank", "noopener,noreferrer");
+    setTimeout(() => {
+      try {
+        if (!newWin || newWin.closed) {
+          window.open(webUrl, "_blank", "noopener,noreferrer");
+        }
+      } catch {
+        window.open(webUrl, "_blank", "noopener,noreferrer");
+      }
+    }, 400);
+  };
   return <div className="min-h-screen bg-gradient-subtle">
       <header className="bg-gradient-primary text-primary-foreground shadow-lg">
         <div className="container mx-auto px-4">
@@ -46,16 +65,17 @@ export default function Layout({
                     </Link>;
               })}
               </div>
-              	<Button
+              <Button
                 asChild
                 variant="ghost"
                 className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1"
               >
                 <a 
-                  href="https://wa.me/5511994001179" 
+                  href="https://web.whatsapp.com/send?phone=5511994001179" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   aria-label="Suporte WhatsApp"
+                  onClick={handleWhatsAppClick}
                 >
                   <MessageCircle className="h-5 w-5" />
                   <span className="text-xs">Suporte</span>
