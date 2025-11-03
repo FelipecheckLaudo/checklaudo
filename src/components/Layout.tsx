@@ -53,7 +53,7 @@ export default function Layout({
                 className="hover:bg-white/10"
               >
                 <a 
-                  href="https://wa.me/5511999999999" 
+                  href="https://wa.me/5511994001179" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   aria-label="Suporte WhatsApp"
