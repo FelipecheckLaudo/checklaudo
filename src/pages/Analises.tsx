@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
-import { Filter, Loader2 } from "lucide-react";
+import { Filter, Loader2, Download, CalendarIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getVistorias, getClientes, getVisitadores, getDigitadores, type Vistoria } from "@/lib/database";
+import { exportVistoriasToPDF } from "@/lib/pdfExport";
 import { toast } from "sonner";
+import { format, isWithinInterval, subMonths } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type TipoFiltro = "vistoriador" | "cliente" | "digitador" | "";
 
@@ -15,6 +21,9 @@ export default function Analises() {
   
   const [tipoFiltro, setTipoFiltro] = useState<TipoFiltro>("");
   const [pessoaSelecionada, setPessoaSelecionada] = useState("");
+  
+  const [dataInicial, setDataInicial] = useState<Date>(subMonths(new Date(), 6));
+  const [dataFinal, setDataFinal] = useState<Date>(new Date());
   
   const [clientes, setClientes] = useState<Array<{ id: string; nome: string }>>([]);
   const [vistoriadores, setVistoriadores] = useState<Array<{ id: string; nome: string }>>([]);
@@ -52,26 +61,50 @@ export default function Analises() {
     setVistoriasFiltradas(vistorias);
   };
 
-  const handlePessoaChange = (nome: string) => {
-    setPessoaSelecionada(nome);
-    
-    if (!nome) {
-      setVistoriasFiltradas(vistorias);
-      return;
+  const aplicarFiltros = () => {
+    let filtradas = vistorias;
+
+    // Filtro por data
+    filtradas = filtradas.filter((v) => {
+      const dataVistoria = new Date(v.created_at);
+      return isWithinInterval(dataVistoria, {
+        start: dataInicial,
+        end: dataFinal,
+      });
+    });
+
+    // Filtro por pessoa
+    if (pessoaSelecionada) {
+      if (tipoFiltro === "vistoriador") {
+        filtradas = filtradas.filter(v => v.liberador === pessoaSelecionada);
+      } else if (tipoFiltro === "cliente") {
+        filtradas = filtradas.filter(v => v.cliente_nome === pessoaSelecionada);
+      } else if (tipoFiltro === "digitador") {
+        filtradas = filtradas.filter(v => v.digitador === pessoaSelecionada);
+      }
     }
 
-    let filtradas: Vistoria[] = [];
-    
-    if (tipoFiltro === "vistoriador") {
-      filtradas = vistorias.filter(v => v.liberador === nome);
-    } else if (tipoFiltro === "cliente") {
-      filtradas = vistorias.filter(v => v.cliente_nome === nome);
-    } else if (tipoFiltro === "digitador") {
-      filtradas = vistorias.filter(v => v.digitador === nome);
-    }
-    
     setVistoriasFiltradas(filtradas);
-    toast.success(`${filtradas.length} laudo(s) encontrado(s)`);
+  };
+
+  useEffect(() => {
+    if (vistorias.length > 0) {
+      aplicarFiltros();
+    }
+  }, [dataInicial, dataFinal, pessoaSelecionada, tipoFiltro, vistorias]);
+
+  const handlePessoaChange = (nome: string) => {
+    setPessoaSelecionada(nome);
+    toast.success("Filtro aplicado");
+  };
+
+  const handleExportPDF = () => {
+    if (vistoriasFiltradas.length === 0) {
+      toast.error("Não há dados para exportar");
+      return;
+    }
+    exportVistoriasToPDF(vistoriasFiltradas);
+    toast.success("Relatório PDF gerado com sucesso!");
   };
 
   const formatCurrency = (value: string | number) => {
@@ -127,12 +160,69 @@ export default function Analises() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* Filtro de Data Inicial */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Data Inicial</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dataInicial && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dataInicial ? format(dataInicial, "dd/MM/yyyy") : "Selecione"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dataInicial}
+                    onSelect={(date) => date && setDataInicial(date)}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Filtro de Data Final */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Data Final</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dataFinal && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dataFinal ? format(dataFinal, "dd/MM/yyyy") : "Selecione"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dataFinal}
+                    onSelect={(date) => date && setDataFinal(date)}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Filtro Tipo */}
             <div>
               <label className="text-sm font-medium mb-2 block">Tipo de Filtro</label>
               <Select value={tipoFiltro} onValueChange={handleTipoFiltroChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo de filtro" />
+                  <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="vistoriador">Vistoriador</SelectItem>
@@ -142,12 +232,13 @@ export default function Analises() {
               </Select>
             </div>
 
+            {/* Filtro Pessoa */}
             <div>
               <label className="text-sm font-medium mb-2 block">
-                {tipoFiltro === "vistoriador" && "Selecione o Vistoriador"}
-                {tipoFiltro === "cliente" && "Selecione o Cliente"}
-                {tipoFiltro === "digitador" && "Selecione o Digitador"}
-                {!tipoFiltro && "Selecione um tipo de filtro primeiro"}
+                {tipoFiltro === "vistoriador" && "Vistoriador"}
+                {tipoFiltro === "cliente" && "Cliente"}
+                {tipoFiltro === "digitador" && "Digitador"}
+                {!tipoFiltro && "Pessoa"}
               </label>
               <Select 
                 value={pessoaSelecionada} 
@@ -155,7 +246,7 @@ export default function Analises() {
                 disabled={!tipoFiltro}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione..." />
+                  <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
                   {getOpcoesSelect().map((opcao) => (
@@ -196,14 +287,26 @@ export default function Analises() {
       {/* Tabela de Laudos */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            {pessoaSelecionada 
-              ? `Laudos de ${pessoaSelecionada}` 
-              : "Todos os Laudos"}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {vistoriasFiltradas.length} laudo(s) encontrado(s)
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>
+                {pessoaSelecionada 
+                  ? `Laudos de ${pessoaSelecionada}` 
+                  : "Todos os Laudos"}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {vistoriasFiltradas.length} laudo(s) encontrado(s)
+              </p>
+            </div>
+            <Button 
+              onClick={handleExportPDF}
+              disabled={vistoriasFiltradas.length === 0}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Exportar PDF
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {vistoriasFiltradas.length === 0 ? (
