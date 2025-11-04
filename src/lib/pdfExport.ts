@@ -37,9 +37,15 @@ export const exportVistoriasToPDF = (vistorias: Vistoria[]) => {
   
   const aprovadas = vistorias.filter(v => v.situacao === "APROVADO").length;
   const reprovadas = vistorias.filter(v => v.situacao === "REPROVADO").length;
+  const conforme = vistorias.filter(v => v.situacao === "CONFORME").length;
+  const naoConforme = vistorias.filter(v => v.situacao === "NÃO CONFORME").length;
+  const aprovadoComApontamentos = vistorias.filter(v => v.situacao === "APROVADO COM APONTAMENTOS").length;
+  const suspeitoAdulteracao = vistorias.filter(v => v.situacao === "SUSPEITO ADULTERAÇÃO").length;
   const pendentes = vistorias.filter(v => v.situacao === "PENDENTE").length;
   
-  doc.text(`Aprovadas: ${aprovadas} | Reprovadas: ${reprovadas} | Pendentes: ${pendentes}`, 14, 56);
+  doc.setFontSize(10);
+  doc.text(`Aprovadas: ${aprovadas} | Reprovadas: ${reprovadas} | Conforme: ${conforme} | Não Conforme: ${naoConforme}`, 14, 56);
+  doc.text(`Aprovado c/ Apontamentos: ${aprovadoComApontamentos} | Suspeito Adulteração: ${suspeitoAdulteracao} | Pendentes: ${pendentes}`, 14, 62);
   
   // Preparar dados da tabela
   const tableData = vistorias.map((vistoria) => {
@@ -62,7 +68,7 @@ export const exportVistoriasToPDF = (vistorias: Vistoria[]) => {
   
   // Criar tabela com autoTable
   autoTable(doc, {
-    startY: 65,
+    startY: 70,
     head: [["Data", "Placa", "Modelo", "Cliente", "Valor", "Pagamento", "Situação"]],
     body: tableData,
     theme: "striped",
@@ -125,7 +131,7 @@ export const exportVistoriasToPDF = (vistorias: Vistoria[]) => {
         });
       }
     },
-    margin: { top: 65, left: 14, right: 14 },
+    margin: { top: 70, left: 14, right: 14 },
   });
   
   // Rodapé
