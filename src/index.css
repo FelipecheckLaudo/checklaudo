@@ -104,6 +104,53 @@ All colors MUST be HSL.
     --sidebar-border: 270 20% 18%;
     --sidebar-ring: 25 95% 60%;
   }
+
+  .blue {
+    --background: 210 100% 97%;
+    --foreground: 215 25% 25%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 25%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 25%;
+
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --primary-dark: 215 85% 40%;
+    
+    --secondary: 200 95% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 15% 50%;
+
+    --accent: 200 95% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 40% 88%;
+    --input: 210 40% 92%;
+    --ring: 210 100% 50%;
+
+    --radius: 0.75rem;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(215 85% 40%), hsl(210 100% 50%));
+    --gradient-accent: linear-gradient(135deg, hsl(210 100% 50%), hsl(200 95% 45%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 100% 97%), hsl(210 50% 96%));
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 215 25% 25%;
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 215 25% 25%;
+    --sidebar-border: 210 40% 88%;
+    --sidebar-ring: 210 100% 50%;
+  }
 }
 
 @layer base {
