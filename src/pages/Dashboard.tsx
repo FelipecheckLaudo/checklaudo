@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getVistorias } from "@/lib/database";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import { DollarSign, FileText, TrendingUp, Users, Award } from "lucide-react";
-import { format, parseISO, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from "date-fns";
+import { DollarSign, FileText, TrendingUp, Users, Award, CalendarIcon } from "lucide-react";
+import { format, parseISO, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths, isWithinInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 export default function Dashboard() {
   const [vistorias, setVistorias] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dataInicial, setDataInicial] = useState<Date | undefined>(subMonths(new Date(), 6));
+  const [dataFinal, setDataFinal] = useState<Date | undefined>(new Date());
 
   useEffect(() => {
     loadData();
@@ -35,13 +41,20 @@ export default function Dashboard() {
     }).format(value);
   };
 
+  // Filtrar vistorias por período
+  const vistoriasFiltradas = vistorias.filter(v => {
+    if (!dataInicial || !dataFinal) return true;
+    const dataVistoria = parseISO(v.created_at);
+    return isWithinInterval(dataVistoria, { start: dataInicial, end: dataFinal });
+  });
+
   // Cálculos de estatísticas
-  const totalVistorias = vistorias.length;
-  const valorTotal = vistorias.reduce((sum, v) => sum + Number(v.valor || 0), 0);
+  const totalVistorias = vistoriasFiltradas.length;
+  const valorTotal = vistoriasFiltradas.reduce((sum, v) => sum + Number(v.valor || 0), 0);
   const ticketMedio = totalVistorias > 0 ? valorTotal / totalVistorias : 0;
 
   // Ranking de vistoriadores por quantidade
-  const vistoriadoresRanking = vistorias.reduce((acc: any, v) => {
+  const vistoriadoresRanking = vistoriasFiltradas.reduce((acc: any, v) => {
     const nome = v.liberador || "Sem vistoriador";
     if (!acc[nome]) {
       acc[nome] = { nome, quantidade: 0, valor: 0 };
@@ -56,7 +69,7 @@ export default function Dashboard() {
     .slice(0, 5);
 
   // Ranking de clientes por quantidade
-  const clientesRanking = vistorias.reduce((acc: any, v) => {
+  const clientesRanking = vistoriasFiltradas.reduce((acc: any, v) => {
     const nome = v.cliente_nome || "Sem cliente";
     if (!acc[nome]) {
       acc[nome] = { nome, quantidade: 0, valor: 0 };
@@ -71,7 +84,7 @@ export default function Dashboard() {
     .slice(0, 5);
 
   // Distribuição por tipo
-  const distribuicaoPorTipo = vistorias.reduce((acc: any, v) => {
+  const distribuicaoPorTipo = vistoriasFiltradas.reduce((acc: any, v) => {
     const tipo = v.tipo || "Sem tipo";
     acc[tipo] = (acc[tipo] || 0) + 1;
     return acc;
@@ -83,7 +96,7 @@ export default function Dashboard() {
   }));
 
   // Distribuição por situação
-  const distribuicaoPorSituacao = vistorias.reduce((acc: any, v) => {
+  const distribuicaoPorSituacao = vistoriasFiltradas.reduce((acc: any, v) => {
     const situacao = v.situacao || "Sem situação";
     acc[situacao] = (acc[situacao] || 0) + 1;
     return acc;
@@ -94,16 +107,16 @@ export default function Dashboard() {
     value
   }));
 
-  // Evolução temporal (últimos 6 meses)
-  const hoje = new Date();
-  const seisMesesAtras = subMonths(hoje, 5);
-  const meses = eachMonthOfInterval({ start: seisMesesAtras, end: hoje });
+  // Evolução temporal (baseado no período selecionado)
+  const meses = dataInicial && dataFinal 
+    ? eachMonthOfInterval({ start: dataInicial, end: dataFinal })
+    : [];
 
   const evolucaoTemporal = meses.map(mes => {
     const inicioMes = startOfMonth(mes);
     const fimMes = endOfMonth(mes);
     
-    const vistoriasMes = vistorias.filter(v => {
+    const vistoriasMes = vistoriasFiltradas.filter(v => {
       const dataVistoria = parseISO(v.created_at);
       return dataVistoria >= inicioMes && dataVistoria <= fimMes;
     });
@@ -136,6 +149,71 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold tracking-tight">Dashboard de Gerenciamento</h1>
         <p className="text-muted-foreground">Visão geral das suas vistorias e desempenho</p>
       </div>
+
+      {/* Filtros de Data */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Período de Análise</CardTitle>
+          <CardDescription>Selecione o intervalo de datas para visualizar</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Data Inicial</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal",
+                      !dataInicial && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dataInicial ? format(dataInicial, "PPP", { locale: ptBR }) : "Selecione a data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dataInicial}
+                    onSelect={setDataInicial}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium">Data Final</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal",
+                      !dataFinal && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dataFinal ? format(dataFinal, "PPP", { locale: ptBR }) : "Selecione a data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dataFinal}
+                    onSelect={setDataFinal}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Cards de Estatísticas */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -189,7 +267,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Evolução Mensal - Quantidade</CardTitle>
-            <CardDescription>Últimos 6 meses</CardDescription>
+            <CardDescription>Período selecionado</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -208,7 +286,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Evolução Mensal - Valor</CardTitle>
-            <CardDescription>Últimos 6 meses</CardDescription>
+            <CardDescription>Período selecionado</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
