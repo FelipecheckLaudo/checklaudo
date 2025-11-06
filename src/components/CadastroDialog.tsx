@@ -155,7 +155,7 @@ export function CadastroDialog({
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="nome">
-                Nome Completo <span className="text-destructive">*</span>
+                NOME COMPLETO/EMPRESA <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="nome"
