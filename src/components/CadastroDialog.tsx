@@ -14,6 +14,7 @@ import {
 import { Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { clienteSchema } from "@/lib/validations";
 
 interface CadastroDialogProps {
   open: boolean;
@@ -104,8 +105,12 @@ export function CadastroDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.nome || !formData.cpf) {
-      toast.error("Preencha os campos obrigatórios");
+    // Validate with zod schema
+    const validation = clienteSchema.safeParse(formData);
+    if (!validation.success) {
+      validation.error.errors.forEach((error) => {
+        toast.error(`${error.path.join('.')}: ${error.message}`);
+      });
       return;
     }
 
@@ -117,7 +122,7 @@ export function CadastroDialog({
       setPreviewUrl("");
       onOpenChange(false);
     } catch (error) {
-      console.error("Erro ao processar formulário:", error);
+      toast.error("Erro ao salvar");
     }
   };
 

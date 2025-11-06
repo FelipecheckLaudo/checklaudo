@@ -1,14 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
-// Interfaces - mantendo compatibilidade com o código existente
 export interface Cliente {
   id: string;
   nome: string;
   cpf: string;
   observacoes: string;
   foto_url?: string;
+  user_id?: string;
   created_at?: string;
-  criadoEm?: string; // Para compatibilidade
+  criadoEm?: string;
 }
 
 export interface Visitador {
@@ -17,6 +17,7 @@ export interface Visitador {
   cpf: string;
   observacoes: string;
   foto_url?: string;
+  user_id?: string;
   created_at?: string;
   criadoEm?: string;
 }
@@ -27,6 +28,7 @@ export interface Digitador {
   cpf: string;
   observacoes: string;
   foto_url?: string;
+  user_id?: string;
   created_at?: string;
   criadoEm?: string;
 }
@@ -40,19 +42,23 @@ export interface Vistoria {
   situacao: string;
   tipo: string;
   cliente_id: string | null;
-  clienteId?: string; // Para compatibilidade
+  clienteId?: string;
   cliente_nome: string;
-  clienteNome?: string; // Para compatibilidade
+  clienteNome?: string;
   cliente_cpf?: string;
   digitador: string;
   liberador: string;
   fotos: string[];
+  user_id?: string;
   created_at?: string;
   criadoEm?: string;
 }
 
 // Clientes
 export const getClientes = async (): Promise<Cliente[]> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('clientes')
     .select('*')
@@ -66,14 +72,18 @@ export const getClientes = async (): Promise<Cliente[]> => {
   }));
 };
 
-export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'created_at'>): Promise<Cliente> => {
+export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Cliente> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('clientes')
     .insert({
       nome: cliente.nome,
       cpf: cliente.cpf,
       observacoes: cliente.observacoes,
-      foto_url: cliente.foto_url
+      foto_url: cliente.foto_url,
+      user_id: user.id
     })
     .select()
     .single();
@@ -86,7 +96,10 @@ export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'cr
   };
 };
 
-export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, 'id' | 'criadoEm' | 'created_at'>>): Promise<Cliente> => {
+export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Cliente> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('clientes')
     .update({
@@ -108,6 +121,9 @@ export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, '
 };
 
 export const deleteCliente = async (id: string): Promise<void> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { error } = await (supabase as any)
     .from('clientes')
     .delete()
@@ -118,6 +134,9 @@ export const deleteCliente = async (id: string): Promise<void> => {
 
 // Visitadores
 export const getVisitadores = async (): Promise<Visitador[]> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('vistoriadores')
     .select('*')
@@ -131,14 +150,18 @@ export const getVisitadores = async (): Promise<Visitador[]> => {
   }));
 };
 
-export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm' | 'created_at'>): Promise<Visitador> => {
+export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Visitador> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('vistoriadores')
     .insert({
       nome: visitador.nome,
       cpf: visitador.cpf,
       observacoes: visitador.observacoes,
-      foto_url: visitador.foto_url
+      foto_url: visitador.foto_url,
+      user_id: user.id
     })
     .select()
     .single();
@@ -151,7 +174,10 @@ export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm'
   };
 };
 
-export const updateVisitador = async (id: string, visitador: Partial<Omit<Visitador, 'id' | 'criadoEm' | 'created_at'>>): Promise<Visitador> => {
+export const updateVisitador = async (id: string, visitador: Partial<Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Visitador> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('vistoriadores')
     .update({
@@ -173,6 +199,9 @@ export const updateVisitador = async (id: string, visitador: Partial<Omit<Visita
 };
 
 export const deleteVisitador = async (id: string): Promise<void> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { error } = await (supabase as any)
     .from('vistoriadores')
     .delete()
@@ -183,6 +212,9 @@ export const deleteVisitador = async (id: string): Promise<void> => {
 
 // Digitadores
 export const getDigitadores = async (): Promise<Digitador[]> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('digitadores')
     .select('*')
@@ -196,14 +228,18 @@ export const getDigitadores = async (): Promise<Digitador[]> => {
   }));
 };
 
-export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm' | 'created_at'>): Promise<Digitador> => {
+export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Digitador> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('digitadores')
     .insert({
       nome: digitador.nome,
       cpf: digitador.cpf,
       observacoes: digitador.observacoes,
-      foto_url: digitador.foto_url
+      foto_url: digitador.foto_url,
+      user_id: user.id
     })
     .select()
     .single();
@@ -216,7 +252,10 @@ export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm'
   };
 };
 
-export const updateDigitador = async (id: string, digitador: Partial<Omit<Digitador, 'id' | 'criadoEm' | 'created_at'>>): Promise<Digitador> => {
+export const updateDigitador = async (id: string, digitador: Partial<Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Digitador> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('digitadores')
     .update({
@@ -238,6 +277,9 @@ export const updateDigitador = async (id: string, digitador: Partial<Omit<Digita
 };
 
 export const deleteDigitador = async (id: string): Promise<void> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { error } = await (supabase as any)
     .from('digitadores')
     .delete()
@@ -248,6 +290,9 @@ export const deleteDigitador = async (id: string): Promise<void> => {
 
 // Vistorias
 export const getVistorias = async (): Promise<Vistoria[]> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('vistorias')
     .select('*')
@@ -257,31 +302,32 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
   
   return (data || []).map(vistoria => ({
     ...vistoria,
-    clienteId: vistoria.cliente_id,
-    clienteNome: vistoria.cliente_nome,
     criadoEm: vistoria.created_at,
-    valor: vistoria.valor.toString()
+    clienteId: vistoria.cliente_id,
+    clienteNome: vistoria.cliente_nome
   }));
 };
 
-export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 'created_at'>): Promise<Vistoria> => {
-  const clienteId = vistoria.clienteId || vistoria.cliente_id;
-  
+export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Vistoria> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { data, error } = await (supabase as any)
     .from('vistorias')
     .insert({
       modelo: vistoria.modelo,
       placa: vistoria.placa,
       pagamento: vistoria.pagamento,
-      valor: Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')),
+      valor: typeof vistoria.valor === 'string' ? parseFloat(vistoria.valor.replace(/[^\d,]/g, '').replace(',', '.')) : vistoria.valor,
       situacao: vistoria.situacao,
       tipo: vistoria.tipo,
-      cliente_id: clienteId || null,
-      cliente_nome: vistoria.clienteNome || vistoria.cliente_nome,
+      cliente_id: vistoria.cliente_id || vistoria.clienteId,
+      cliente_nome: vistoria.cliente_nome || vistoria.clienteNome,
       cliente_cpf: vistoria.cliente_cpf,
       digitador: vistoria.digitador,
       liberador: vistoria.liberador,
-      fotos: vistoria.fotos || []
+      fotos: vistoria.fotos || [],
+      user_id: user.id
     })
     .select()
     .single();
@@ -290,26 +336,34 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
   
   return {
     ...data!,
-    clienteId: data!.cliente_id,
-    clienteNome: data!.cliente_nome,
     criadoEm: data!.created_at,
-    valor: data!.valor.toString()
+    clienteId: data!.cliente_id,
+    clienteNome: data!.cliente_nome
   };
 };
 
-export const updateVistoria = async (id: string, vistoria: Partial<Vistoria>): Promise<Vistoria> => {
+export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Vistoria> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const updateData: any = {};
   
   if (vistoria.modelo !== undefined) updateData.modelo = vistoria.modelo;
   if (vistoria.placa !== undefined) updateData.placa = vistoria.placa;
   if (vistoria.pagamento !== undefined) updateData.pagamento = vistoria.pagamento;
-  if (vistoria.valor !== undefined) updateData.valor = Number(String(vistoria.valor).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'));
+  if (vistoria.valor !== undefined) {
+    updateData.valor = typeof vistoria.valor === 'string'
+      ? parseFloat(vistoria.valor.replace(/[^\d,]/g, '').replace(',', '.'))
+      : vistoria.valor;
+  }
   if (vistoria.situacao !== undefined) updateData.situacao = vistoria.situacao;
   if (vistoria.tipo !== undefined) updateData.tipo = vistoria.tipo;
+  if (vistoria.cliente_id !== undefined) updateData.cliente_id = vistoria.cliente_id;
   if (vistoria.cliente_nome !== undefined) updateData.cliente_nome = vistoria.cliente_nome;
   if (vistoria.cliente_cpf !== undefined) updateData.cliente_cpf = vistoria.cliente_cpf;
   if (vistoria.digitador !== undefined) updateData.digitador = vistoria.digitador;
   if (vistoria.liberador !== undefined) updateData.liberador = vistoria.liberador;
+  if (vistoria.fotos !== undefined) updateData.fotos = vistoria.fotos;
 
   const { data, error } = await (supabase as any)
     .from('vistorias')
@@ -322,14 +376,16 @@ export const updateVistoria = async (id: string, vistoria: Partial<Vistoria>): P
   
   return {
     ...data!,
-    clienteId: data!.cliente_id,
-    clienteNome: data!.cliente_nome,
     criadoEm: data!.created_at,
-    valor: data!.valor.toString()
+    clienteId: data!.cliente_id,
+    clienteNome: data!.cliente_nome
   };
 };
 
 export const deleteVistoria = async (id: string): Promise<void> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Não autenticado");
+
   const { error } = await (supabase as any)
     .from('vistorias')
     .delete()

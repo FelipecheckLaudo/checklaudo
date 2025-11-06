@@ -1,6 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
-import { ClipboardList, BarChart3, Users, Settings, MessageCircle, LayoutDashboard } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ClipboardList, BarChart3, Users, Settings, MessageCircle, LayoutDashboard, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import ThemeToggle from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
 const navItems = [{
@@ -30,6 +32,17 @@ export default function Layout({
   children: React.ReactNode;
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Erro ao sair");
+    } else {
+      toast.success("Logout realizado com sucesso");
+      navigate("/auth");
+    }
+  };
 
   // Open WhatsApp without relying on api.whatsapp.com and provide a desktop fallback
   const handleWhatsAppClick = (e: any) => {
@@ -84,6 +97,14 @@ export default function Layout({
                   <MessageCircle className="h-5 w-5" />
                   <span className="text-xs">Suporte</span>
                 </a>
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="text-xs">Sair</span>
               </Button>
               <ThemeToggle />
             </div>
