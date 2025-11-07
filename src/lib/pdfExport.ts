@@ -63,6 +63,7 @@ export const exportVistoriasToPDF = (vistorias: Vistoria[]) => {
       valor,
       vistoria.pagamento,
       vistoria.situacao,
+      vistoria.modalidade, // Adicionar modalidade para usar no didDrawCell
     ];
   });
   
@@ -94,6 +95,18 @@ export const exportVistoriasToPDF = (vistorias: Vistoria[]) => {
       4: { cellWidth: 22, halign: "right" },
       5: { cellWidth: 25, halign: "center" },
       6: { cellWidth: 35, halign: "center" },
+    },
+    willDrawCell: (data) => {
+      // Colorir fundo das células de laudos externos
+      if (data.section === "body" && data.row.index !== undefined) {
+        const rowData = tableData[data.row.index];
+        const modalidade = rowData[7]; // modalidade está no índice 7
+        
+        if (modalidade === "EXTERNO" && data.column.index !== 6) {
+          // Aplicar fundo laranja suave em todas as células exceto a de situação
+          data.cell.styles.fillColor = [255, 247, 237];
+        }
+      }
     },
     didDrawCell: (data) => {
       // Colorir a célula de situação de acordo com o status

@@ -263,7 +263,12 @@ export default function Vistorias() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredVistorias.map(vistoria => <TableRow key={vistoria.id}>
+                  {filteredVistorias.map(vistoria => <TableRow 
+                      key={vistoria.id}
+                      className={cn(
+                        vistoria.modalidade === "EXTERNO" && "bg-orange-50/50 dark:bg-orange-950/20 hover:bg-orange-100/50 dark:hover:bg-orange-950/30"
+                      )}
+                    >
                       <TableCell className="font-medium">
                         {formatDate(vistoria.criadoEm || vistoria.created_at || "")}
                       </TableCell>
