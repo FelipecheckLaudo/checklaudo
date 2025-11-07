@@ -15,6 +15,7 @@ import { Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { clienteSchema } from "@/lib/validations";
+import { logger } from "@/lib/logger";
 
 interface CadastroDialogProps {
   open: boolean;
@@ -63,10 +64,18 @@ export function CadastroDialog({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
       if (!file.type.startsWith("image/")) {
         toast.error("Por favor, selecione apenas imagens");
         return;
       }
+      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("A imagem deve ter no máximo 2MB");
+        return;
+      }
+      
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
@@ -82,24 +91,44 @@ export function CadastroDialog({
   const uploadImage = async (): Promise<string | null> => {
     if (!selectedFile) return formData.foto_url || null;
 
-    const fileExt = selectedFile.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `cadastros/${fileName}`;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Você precisa estar logado para fazer upload");
+        return null;
+      }
 
-    const { error: uploadError, data } = await supabase.storage
-      .from('vistoria-fotos')
-      .upload(filePath, selectedFile);
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      // Store files in user-specific folder for proper RLS
+      const filePath = `${user.id}/cadastros/${fileName}`;
 
-    if (uploadError) {
-      toast.error("Erro ao fazer upload da imagem");
-      throw uploadError;
+      const { error: uploadError } = await supabase.storage
+        .from('vistoria-fotos')
+        .upload(filePath, selectedFile);
+
+      if (uploadError) {
+        logger.error("Error uploading image", uploadError);
+        toast.error("Erro ao fazer upload da imagem");
+        throw uploadError;
+      }
+
+      // Use signed URL instead of public URL for security
+      const { data: signedUrlData, error: urlError } = await supabase.storage
+        .from('vistoria-fotos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year expiry
+
+      if (urlError) {
+        logger.error("Error creating signed URL", urlError);
+        toast.error("Erro ao processar imagem");
+        throw urlError;
+      }
+
+      return signedUrlData.signedUrl;
+    } catch (error) {
+      logger.error("Upload failed", error);
+      return null;
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('vistoria-fotos')
-      .getPublicUrl(filePath);
-
-    return publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,6 +151,7 @@ export function CadastroDialog({
       setPreviewUrl("");
       onOpenChange(false);
     } catch (error) {
+      logger.error("Error saving cadastro", error);
       toast.error("Erro ao salvar");
     }
   };

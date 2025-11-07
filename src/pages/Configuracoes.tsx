@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { logger } from "@/lib/logger";
 
 interface ConfigData {
   empresa: {
@@ -83,7 +84,7 @@ export default function Configuracoes() {
         .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Error fetching logo:", error);
+        logger.error("Error fetching logo", error);
         return;
       }
 
@@ -91,7 +92,7 @@ export default function Configuracoes() {
         setLogoUrl(data.logo_url);
       }
     } catch (error) {
-      console.error("Error fetching logo:", error);
+      logger.error("Error fetching logo", error);
     }
   };
 
@@ -166,7 +167,7 @@ export default function Configuracoes() {
       setLogoUrl(publicUrl);
       toast.success("Logo atualizada com sucesso!");
     } catch (error) {
-      console.error("Error uploading logo:", error);
+      logger.error("Error uploading logo", error);
       toast.error("Erro ao fazer upload da logo");
     } finally {
       setUploading(false);
@@ -191,7 +192,7 @@ export default function Configuracoes() {
       setLogoUrl(null);
       toast.success("Logo removida com sucesso!");
     } catch (error) {
-      console.error("Error removing logo:", error);
+      logger.error("Error removing logo", error);
       toast.error("Erro ao remover logo");
     }
   };

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
@@ -54,7 +55,7 @@ export default function Auth() {
         setLogoUrl(data.logo_url);
       }
     } catch (error) {
-      console.error("Error fetching logo:", error);
+      logger.error("Error fetching logo", error);
     }
   };
 

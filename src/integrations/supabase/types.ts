@@ -23,7 +23,7 @@ export type Database = {
           nome: string
           observacoes: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           cpf: string
@@ -33,7 +33,7 @@ export type Database = {
           nome: string
           observacoes?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           cpf?: string
@@ -43,7 +43,7 @@ export type Database = {
           nome?: string
           observacoes?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -56,7 +56,7 @@ export type Database = {
           nome: string
           observacoes: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           cpf: string
@@ -66,7 +66,7 @@ export type Database = {
           nome: string
           observacoes?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           cpf?: string
@@ -76,7 +76,7 @@ export type Database = {
           nome?: string
           observacoes?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -134,7 +134,7 @@ export type Database = {
           nome: string
           observacoes: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           cpf: string
@@ -144,7 +144,7 @@ export type Database = {
           nome: string
           observacoes?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           cpf?: string
@@ -154,7 +154,7 @@ export type Database = {
           nome?: string
           observacoes?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -175,7 +175,7 @@ export type Database = {
           situacao: string
           tipo: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
           valor: number
         }
         Insert: {
@@ -194,7 +194,7 @@ export type Database = {
           situacao?: string
           tipo?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
           valor: number
         }
         Update: {
@@ -213,7 +213,7 @@ export type Database = {
           situacao?: string
           tipo?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
           valor?: number
         }
         Relationships: [

@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores, type Cliente, type Digitador, type Visitador } from "@/lib/database";
 import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { toast } from "sonner";
+import { clienteSchema } from "@/lib/validations";
 export default function NovaVistoria() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -96,6 +97,19 @@ export default function NovaVistoria() {
           toast.error("Preencha os dados do cliente particular");
           return;
         }
+        
+        // Validate CPF using schema
+        const validation = clienteSchema.safeParse({
+          nome: novoCliente.nome,
+          cpf: novoCliente.cpf,
+          observacoes: ""
+        });
+        
+        if (!validation.success) {
+          validation.error.errors.forEach(err => toast.error(err.message));
+          return;
+        }
+        
         // Cliente particular não é cadastrado no sistema
         clienteId = null as any;
         clienteNome = novoCliente.nome;
