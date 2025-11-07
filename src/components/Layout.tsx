@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ThemeToggle from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 const navItems = [{
   path: "/",
   label: "Vistorias",
@@ -33,6 +34,30 @@ export default function Layout({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchLogo();
+  }, []);
+
+  const fetchLogo = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("system_settings")
+        .select("logo_url")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (data?.logo_url) {
+        setLogoUrl(data.logo_url);
+      }
+    } catch (error) {
+      console.error("Error fetching logo:", error);
+    }
+  };
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -66,8 +91,16 @@ export default function Layout({
       <header className="bg-gradient-primary text-primary-foreground shadow-lg">
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <ClipboardList className="h-6 w-6" />
+            <div className="flex items-center gap-3">
+              {logoUrl ? (
+                <img 
+                  src={logoUrl} 
+                  alt="Logo" 
+                  className="h-10 w-auto object-contain"
+                />
+              ) : (
+                <ClipboardList className="h-6 w-6" />
+              )}
               <span className="text-xl font-bold">Checklaudo</span>
             </div>
             

@@ -1,4 +1,4 @@
-import { Building2, Bell, FileText, Settings } from "lucide-react";
+import { Building2, Bell, FileText, Settings, Upload, X, Image as ImageIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
@@ -7,8 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ConfigData {
   empresa: {
@@ -58,13 +59,142 @@ const defaultConfig: ConfigData = {
 
 export default function Configuracoes() {
   const [config, setConfig] = useState<ConfigData>(defaultConfig);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const savedConfig = localStorage.getItem("appConfig");
     if (savedConfig) {
       setConfig(JSON.parse(savedConfig));
     }
+    fetchLogo();
   }, []);
+
+  const fetchLogo = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("system_settings")
+        .select("logo_url")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error fetching logo:", error);
+        return;
+      }
+
+      if (data?.logo_url) {
+        setLogoUrl(data.logo_url);
+      }
+    } catch (error) {
+      console.error("Error fetching logo:", error);
+    }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 2MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Você precisa estar logado");
+        return;
+      }
+
+      // Delete old logo if exists
+      if (logoUrl) {
+        const oldPath = logoUrl.split("/").slice(-2).join("/");
+        await supabase.storage.from("logos").remove([oldPath]);
+      }
+
+      // Upload new logo
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}/logo.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("logos")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("logos")
+        .getPublicUrl(filePath);
+
+      // Save to database
+      const { data: existingSettings } = await supabase
+        .from("system_settings")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (existingSettings) {
+        const { error: updateError } = await supabase
+          .from("system_settings")
+          .update({ logo_url: publicUrl })
+          .eq("user_id", user.id);
+
+        if (updateError) throw updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from("system_settings")
+          .insert({ user_id: user.id, logo_url: publicUrl });
+
+        if (insertError) throw insertError;
+      }
+
+      setLogoUrl(publicUrl);
+      toast.success("Logo atualizada com sucesso!");
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      toast.error("Erro ao fazer upload da logo");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      if (logoUrl) {
+        const filePath = logoUrl.split("/").slice(-2).join("/");
+        await supabase.storage.from("logos").remove([filePath]);
+      }
+
+      await supabase
+        .from("system_settings")
+        .update({ logo_url: null })
+        .eq("user_id", user.id);
+
+      setLogoUrl(null);
+      toast.success("Logo removida com sucesso!");
+    } catch (error) {
+      console.error("Error removing logo:", error);
+      toast.error("Erro ao remover logo");
+    }
+  };
 
   const handleSave = () => {
     localStorage.setItem("appConfig", JSON.stringify(config));
@@ -134,7 +264,75 @@ export default function Configuracoes() {
                 Informações gerais que aparecerão nos relatórios e documentos
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label>Logo da Empresa</Label>
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+                      {logoUrl ? (
+                        <div className="space-y-4">
+                          <div className="flex justify-center">
+                            <img 
+                              src={logoUrl} 
+                              alt="Logo da empresa" 
+                              className="max-h-32 object-contain"
+                            />
+                          </div>
+                          <div className="flex gap-2 justify-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={uploading}
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              Alterar
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleRemoveLogo}
+                              disabled={uploading}
+                            >
+                              <X className="h-4 w-4 mr-2" />
+                              Remover
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground" />
+                          <div>
+                            <Button
+                              variant="outline"
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={uploading}
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              {uploading ? "Enviando..." : "Selecionar Logo"}
+                            </Button>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            PNG, JPG ou WEBP (máx. 2MB)
+                          </p>
+                        </div>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Esta logo será exibida na tela de login e no cabeçalho da aplicação
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="nome">Nome da Empresa</Label>
                 <Input
