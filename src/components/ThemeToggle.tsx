@@ -7,7 +7,7 @@ export default function ThemeToggle() {
 
   const toggleTheme = () => {
     if (theme === "light") {
-      setTheme("blue");
+      setTheme("dark");
     } else {
       setTheme("light");
     }
@@ -21,7 +21,7 @@ export default function ThemeToggle() {
       className="hover:bg-white/10"
     >
       {theme === "light" && <Sun className="h-5 w-5 transition-all" />}
-      {theme === "blue" && <Palette className="h-5 w-5 transition-all" />}
+      {theme === "dark" && <Palette className="h-5 w-5 transition-all" />}
       <span className="sr-only">Alternar tema</span>
     </Button>
   );

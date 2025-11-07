@@ -99,7 +99,14 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
+        <CardHeader className="text-center space-y-4">
+          <div className="flex justify-center">
+            <img 
+              src="/placeholder.svg" 
+              alt="Logo" 
+              className="h-20 w-auto"
+            />
+          </div>
           <CardTitle>{isLogin ? "Login" : "Criar Conta"}</CardTitle>
           <CardDescription>
             {isLogin
