@@ -49,6 +49,7 @@ export interface Vistoria {
   digitador: string;
   liberador: string;
   fotos: string[];
+  modalidade: string;
   user_id?: string;
   created_at?: string;
   criadoEm?: string;

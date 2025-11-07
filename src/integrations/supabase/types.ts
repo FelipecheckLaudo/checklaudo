@@ -144,6 +144,7 @@ export type Database = {
           fotos: string[] | null
           id: string
           liberador: string | null
+          modalidade: string
           modelo: string
           pagamento: string
           placa: string
@@ -162,6 +163,7 @@ export type Database = {
           fotos?: string[] | null
           id?: string
           liberador?: string | null
+          modalidade?: string
           modelo: string
           pagamento: string
           placa: string
@@ -180,6 +182,7 @@ export type Database = {
           fotos?: string[] | null
           id?: string
           liberador?: string | null
+          modalidade?: string
           modelo?: string
           pagamento?: string
           placa?: string

@@ -24,6 +24,7 @@ export default function NovaVistoria() {
     valor: "",
     situacao: "PENDENTE",
     tipo: "ECV/TRANSFERENCIA",
+    modalidade: "INTERNO",
     clienteId: "",
     digitador: "",
     liberador: ""
@@ -112,6 +113,7 @@ export default function NovaVistoria() {
         valor: formData.valor,
         situacao: formData.situacao,
         tipo: formData.tipo,
+        modalidade: formData.modalidade,
         clienteId: clienteId,
         cliente_id: clienteId,
         clienteNome: clienteNome,
@@ -179,9 +181,24 @@ export default function NovaVistoria() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="tipo">
-                  Tipo de Laudo <span className="text-destructive">*</span>
-                </Label>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="tipo" className="flex-1">
+                    Tipo de Laudo <span className="text-destructive">*</span>
+                  </Label>
+                  <Button
+                    type="button"
+                    variant={formData.modalidade === "EXTERNO" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setFormData({
+                      ...formData,
+                      modalidade: formData.modalidade === "INTERNO" ? "EXTERNO" : "INTERNO"
+                    })}
+                    disabled={isSaving}
+                    className="h-8 text-xs"
+                  >
+                    Modalidade: {formData.modalidade === "INTERNO" ? "Interno/Base" : "Externo/Lojista"}
+                  </Button>
+                </div>
                 <Select value={formData.tipo} onValueChange={value => setFormData({
                 ...formData,
                 tipo: value

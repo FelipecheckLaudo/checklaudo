@@ -273,9 +273,21 @@ export default function Vistorias() {
                       <TableCell>{vistoria.modelo}</TableCell>
                       <TableCell>{vistoria.clienteNome || vistoria.cliente_nome}</TableCell>
                       <TableCell>
-                        <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded">
-                          {vistoria.tipo}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className={cn(
+                            "text-xs font-medium px-2 py-1 rounded",
+                            vistoria.modalidade === "EXTERNO" 
+                              ? "bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-500/30" 
+                              : "bg-primary/10 text-primary"
+                          )}>
+                            {vistoria.tipo}
+                          </span>
+                          {vistoria.modalidade === "EXTERNO" && (
+                            <span className="text-[10px] font-semibold text-orange-700 dark:text-orange-400 uppercase">
+                              Externo/Lojista
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>{formatCurrency(vistoria.valor)}</TableCell>
                       <TableCell>
