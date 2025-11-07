@@ -322,6 +322,7 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
       valor: typeof vistoria.valor === 'string' ? parseFloat(vistoria.valor.replace(/[^\d,]/g, '').replace(',', '.')) : vistoria.valor,
       situacao: vistoria.situacao,
       tipo: vistoria.tipo,
+      modalidade: vistoria.modalidade,
       cliente_id: vistoria.cliente_id || vistoria.clienteId,
       cliente_nome: vistoria.cliente_nome || vistoria.clienteNome,
       cliente_cpf: vistoria.cliente_cpf,
@@ -359,6 +360,7 @@ export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria
   }
   if (vistoria.situacao !== undefined) updateData.situacao = vistoria.situacao;
   if (vistoria.tipo !== undefined) updateData.tipo = vistoria.tipo;
+  if (vistoria.modalidade !== undefined) updateData.modalidade = vistoria.modalidade;
   if (vistoria.cliente_id !== undefined) updateData.cliente_id = vistoria.cliente_id;
   if (vistoria.cliente_nome !== undefined) updateData.cliente_nome = vistoria.cliente_nome;
   if (vistoria.cliente_cpf !== undefined) updateData.cliente_cpf = vistoria.cliente_cpf;
