@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ThemeToggle from "./ThemeToggle";
+import { InstallButton } from "./InstallButton";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
@@ -133,6 +134,7 @@ export default function Layout({
                       </Link>;
               })}
                 </div>
+                <InstallButton />
                 <Button asChild variant="ghost" className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1">
                   <a href="https://web.whatsapp.com/send?phone=5511994001179" target="_blank" rel="noopener noreferrer" aria-label="Suporte WhatsApp" onClick={handleWhatsAppClick}>
                     <MessageCircle className="h-5 w-5" />
@@ -148,6 +150,7 @@ export default function Layout({
 
             {/* Mobile Navigation */}
             {isMobile && <div className="flex items-center gap-2">
+                <InstallButton />
                 <ThemeToggle />
                 <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                   <SheetTrigger asChild>
