@@ -172,7 +172,7 @@ export default function NovaVistoria() {
           <CardHeader>
             <CardTitle>Informações do Veículo</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 bg-sky-100">
+          <CardContent className="space-y-4 bg-blue-400">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="modelo">
