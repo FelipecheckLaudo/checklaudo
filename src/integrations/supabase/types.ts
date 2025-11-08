@@ -238,6 +238,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_cpf: { Args: { cpf_input: string }; Returns: boolean }
+      validate_placa: { Args: { placa_input: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "operator" | "viewer"
