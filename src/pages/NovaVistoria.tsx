@@ -99,19 +99,18 @@ export default function NovaVistoria() {
           toast.error("Preencha os dados do cliente particular");
           return;
         }
-        
+
         // Validate CPF using schema
         const validation = clienteSchema.safeParse({
           nome: novoCliente.nome,
           cpf: novoCliente.cpf,
           observacoes: ""
         });
-        
         if (!validation.success) {
           validation.error.errors.forEach(err => toast.error(err.message));
           return;
         }
-        
+
         // Cliente particular não é cadastrado no sistema
         clienteId = null as any;
         clienteNome = novoCliente.nome;
@@ -173,7 +172,7 @@ export default function NovaVistoria() {
           <CardHeader>
             <CardTitle>Informações do Veículo</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 bg-slate-50">
+          <CardContent className="space-y-4 bg-[#041665]/[0.31]">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="modelo">
@@ -202,17 +201,10 @@ export default function NovaVistoria() {
                   <Label htmlFor="tipo" className="flex-1">
                     Tipo de Laudo <span className="text-destructive">*</span>
                   </Label>
-                  <Button
-                    type="button"
-                    variant={formData.modalidade === "EXTERNO" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setFormData({
-                      ...formData,
-                      modalidade: formData.modalidade === "INTERNO" ? "EXTERNO" : "INTERNO"
-                    })}
-                    disabled={isSaving}
-                    className="h-8 text-xs"
-                  >
+                  <Button type="button" variant={formData.modalidade === "EXTERNO" ? "default" : "outline"} size="sm" onClick={() => setFormData({
+                  ...formData,
+                  modalidade: formData.modalidade === "INTERNO" ? "EXTERNO" : "INTERNO"
+                })} disabled={isSaving} className="h-8 text-xs">
                     Modalidade: {formData.modalidade === "INTERNO" ? "Interno/Base" : "Externo/Lojista"}
                   </Button>
                 </div>
@@ -294,10 +286,16 @@ export default function NovaVistoria() {
             <div className="space-y-3">
               <Label>Tipo de Cliente</Label>
               <RadioGroup value={tipoCliente} onValueChange={(value: "cadastrado" | "novo" | "particular") => {
-                setTipoCliente(value);
-                setFormData({ ...formData, clienteId: "" });
-                setNovoCliente({ nome: "", cpf: "" });
-              }} disabled={isSaving}>
+              setTipoCliente(value);
+              setFormData({
+                ...formData,
+                clienteId: ""
+              });
+              setNovoCliente({
+                nome: "",
+                cpf: ""
+              });
+            }} disabled={isSaving}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="cadastrado" id="cadastrado" />
                   <Label htmlFor="cadastrado" className="font-normal cursor-pointer">Cliente Cadastrado</Label>
@@ -313,65 +311,49 @@ export default function NovaVistoria() {
               </RadioGroup>
             </div>
 
-            {tipoCliente === "cadastrado" && (
-              <div className="space-y-2">
+            {tipoCliente === "cadastrado" && <div className="space-y-2">
                 <Label htmlFor="cliente">Selecionar Cliente <span className="text-destructive">*</span></Label>
-                {isLoading ? (
-                  <div className="flex items-center gap-2 py-2 text-muted-foreground">
+                {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Carregando clientes...</span>
-                  </div>
-                ) : clientes.length === 0 ? (
-                  <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+                  </div> : clientes.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
                     Nenhum cliente cadastrado. Selecione outra opção acima.
-                  </div>
-                ) : (
-                  <Select value={formData.clienteId} onValueChange={value => setFormData({ ...formData, clienteId: value })} disabled={isSaving}>
+                  </div> : <Select value={formData.clienteId} onValueChange={value => setFormData({
+              ...formData,
+              clienteId: value
+            })} disabled={isSaving}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um cliente" />
                     </SelectTrigger>
                     <SelectContent>
-                      {clientes.map(cliente => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
+                      {clientes.map(cliente => <SelectItem key={cliente.id} value={cliente.id}>
                           {cliente.nome} - {cliente.cpf}
-                        </SelectItem>
-                      ))}
+                        </SelectItem>)}
                     </SelectContent>
-                  </Select>
-                )}
-              </div>
-            )}
+                  </Select>}
+              </div>}
 
-            {(tipoCliente === "novo" || tipoCliente === "particular") && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(tipoCliente === "novo" || tipoCliente === "particular") && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="novoClienteNome">
                     Nome do Cliente <span className="text-destructive">*</span>
                   </Label>
-                  <Input 
-                    id="novoClienteNome" 
-                    placeholder="Ex: João Silva" 
-                    value={novoCliente.nome} 
-                    onChange={e => setNovoCliente({ ...novoCliente, nome: e.target.value.toUpperCase() })} 
-                    disabled={isSaving} 
-                  />
+                  <Input id="novoClienteNome" placeholder="Ex: João Silva" value={novoCliente.nome} onChange={e => setNovoCliente({
+                ...novoCliente,
+                nome: e.target.value.toUpperCase()
+              })} disabled={isSaving} />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="novoClienteCpf">
                     CPF do Cliente <span className="text-destructive">*</span>
                   </Label>
-                  <Input 
-                    id="novoClienteCpf" 
-                    placeholder="123.456.789-00" 
-                    value={novoCliente.cpf} 
-                    onChange={e => setNovoCliente({ ...novoCliente, cpf: formatCPF(e.target.value) })} 
-                    maxLength={14} 
-                    disabled={isSaving} 
-                  />
+                  <Input id="novoClienteCpf" placeholder="123.456.789-00" value={novoCliente.cpf} onChange={e => setNovoCliente({
+                ...novoCliente,
+                cpf: formatCPF(e.target.value)
+              })} maxLength={14} disabled={isSaving} />
                 </div>
-              </div>
-            )}
+              </div>}
           </CardContent>
         </Card>
 
