@@ -39,22 +39,20 @@ export default function Layout({
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
-
   useEffect(() => {
     fetchLogo();
   }, []);
-
   const fetchLogo = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) return;
-
-      const { data } = await supabase
-        .from("system_settings")
-        .select("logo_url")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
+      const {
+        data
+      } = await supabase.from("system_settings").select("logo_url").eq("user_id", user.id).maybeSingle();
       if (data?.logo_url) {
         setLogoUrl(data.logo_url);
       }
@@ -62,9 +60,10 @@ export default function Layout({
       console.error("Error fetching logo:", error);
     }
   };
-
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
+    const {
+      error
+    } = await supabase.auth.signOut();
     if (error) {
       toast.error("Erro ao sair");
     } else {
@@ -79,7 +78,6 @@ export default function Layout({
     const phone = "5511994001179";
     const appUrl = `whatsapp://send?phone=${phone}`;
     const webUrl = `https://web.whatsapp.com/send?phone=${phone}`;
-
     const newWin = window.open(appUrl, "_blank", "noopener,noreferrer");
     setTimeout(() => {
       try {
@@ -96,62 +94,37 @@ export default function Layout({
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              {logoUrl ? (
-                <img 
-                  src={logoUrl} 
-                  alt="Logo" 
-                  className="h-8 md:h-10 w-auto object-contain"
-                />
-              ) : (
-                <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />
-              )}
-              <span className="text-lg md:text-xl font-bold">Checklaudo</span>
+              {logoUrl ? <img src={logoUrl} alt="Logo" className="h-8 md:h-10 w-auto object-contain" /> : <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />}
+              <span className="text-lg md:text-xl font-bold">CheckLaudo</span>
             </div>
             
             {/* Desktop Navigation */}
-            {!isMobile && (
-              <div className="flex items-center gap-2">
+            {!isMobile && <div className="flex items-center gap-2">
                 <div className="flex gap-1">
                   {navItems.map(item => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
-                  return <Link key={item.path} to={item.path} className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200", isActive ? "bg-white/20 shadow-md" : "hover:bg-white/10")}>
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                return <Link key={item.path} to={item.path} className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200", isActive ? "bg-white/20 shadow-md" : "hover:bg-white/10")}>
                         <Icon className="h-5 w-5" />
                         <span className="font-medium">{item.label}</span>
                       </Link>;
-                })}
+              })}
                 </div>
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1"
-                >
-                  <a 
-                    href="https://web.whatsapp.com/send?phone=5511994001179" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label="Suporte WhatsApp"
-                    onClick={handleWhatsAppClick}
-                  >
+                <Button asChild variant="ghost" className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1">
+                  <a href="https://web.whatsapp.com/send?phone=5511994001179" target="_blank" rel="noopener noreferrer" aria-label="Suporte WhatsApp" onClick={handleWhatsAppClick}>
                     <MessageCircle className="h-5 w-5" />
                     <span className="text-xs">Suporte</span>
                   </a>
                 </Button>
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1"
-                >
+                <Button variant="ghost" onClick={handleLogout} className="hover:bg-white/10 flex flex-col h-auto py-2 px-3 gap-1">
                   <LogOut className="h-5 w-5" />
                   <span className="text-xs">Sair</span>
                 </Button>
                 <ThemeToggle />
-              </div>
-            )}
+              </div>}
 
             {/* Mobile Navigation */}
-            {isMobile && (
-              <div className="flex items-center gap-2">
+            {isMobile && <div className="flex items-center gap-2">
                 <ThemeToggle />
                 <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                   <SheetTrigger asChild>
@@ -165,46 +138,25 @@ export default function Layout({
                     </SheetHeader>
                     <div className="flex flex-col gap-4 mt-6">
                       {navItems.map(item => {
-                        const Icon = item.icon;
-                        const isActive = location.pathname === item.path;
-                        return <Link 
-                          key={item.path} 
-                          to={item.path} 
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-lg",
-                            isActive ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-muted"
-                          )}
-                        >
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.path;
+                    return <Link key={item.path} to={item.path} onClick={() => setMobileMenuOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-lg", isActive ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-muted")}>
                           <Icon className="h-6 w-6" />
                           <span className="font-medium">{item.label}</span>
                         </Link>;
-                      })}
+                  })}
                       
                       <div className="border-t pt-4 mt-2 space-y-3">
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="w-full justify-start gap-3 h-12"
-                        >
-                          <a 
-                            href="https://web.whatsapp.com/send?phone=5511994001179" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            onClick={handleWhatsAppClick}
-                          >
+                        <Button asChild variant="outline" className="w-full justify-start gap-3 h-12">
+                          <a href="https://web.whatsapp.com/send?phone=5511994001179" target="_blank" rel="noopener noreferrer" onClick={handleWhatsAppClick}>
                             <MessageCircle className="h-5 w-5" />
                             <span>Suporte</span>
                           </a>
                         </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            handleLogout();
-                          }}
-                          className="w-full justify-start gap-3 h-12"
-                        >
+                        <Button variant="outline" onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }} className="w-full justify-start gap-3 h-12">
                           <LogOut className="h-5 w-5" />
                           <span>Sair</span>
                         </Button>
@@ -212,8 +164,7 @@ export default function Layout({
                     </div>
                   </SheetContent>
                 </Sheet>
-              </div>
-            )}
+              </div>}
           </nav>
         </div>
       </header>
