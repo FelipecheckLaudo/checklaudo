@@ -11,6 +11,7 @@ import { exportVistoriasToPDF } from "@/lib/pdfExport";
 import { toast } from "sonner";
 import { format, isWithinInterval, subMonths } from "date-fns";
 import { cn } from "@/lib/utils";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 type TipoFiltro = "vistoriador" | "cliente" | "digitador" | "";
 
@@ -49,7 +50,8 @@ export default function Analises() {
       setVistoriadores(vistoriadoresData.map(v => ({ id: v.id, nome: v.nome })));
       setDigitadores(digitadoresData.map(d => ({ id: d.id, nome: d.nome })));
     } catch (error: any) {
-      toast.error(error.message || "Erro ao carregar dados");
+      const friendlyMessage = getUserFriendlyError(error, "carregar dados");
+      toast.error(friendlyMessage);
     } finally {
       setIsLoading(false);
     }

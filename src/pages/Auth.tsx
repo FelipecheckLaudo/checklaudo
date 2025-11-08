@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
@@ -81,11 +82,8 @@ export default function Auth() {
         });
 
         if (error) {
-          if (error.message.includes("Invalid login credentials")) {
-            toast.error("Email ou senha incorretos");
-          } else {
-            toast.error("Erro ao fazer login");
-          }
+          const friendlyMessage = getUserFriendlyError(error, "login");
+          toast.error(friendlyMessage);
           return;
         }
 
@@ -100,11 +98,8 @@ export default function Auth() {
         });
 
         if (error) {
-          if (error.message.includes("already registered")) {
-            toast.error("Este email já está cadastrado");
-          } else {
-            toast.error("Erro ao criar conta");
-          }
+          const friendlyMessage = getUserFriendlyError(error, "signup");
+          toast.error(friendlyMessage);
           return;
         }
 

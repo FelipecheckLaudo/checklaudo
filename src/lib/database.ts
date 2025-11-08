@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getUserFriendlyError } from "./errorHandler";
 
 export interface Cliente {
   id: string;
@@ -65,7 +66,10 @@ export const getClientes = async (): Promise<Cliente[]> => {
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "getClientes");
+    throw new Error(friendlyMessage);
+  }
   
   return (data || []).map(cliente => ({
     ...cliente,
@@ -89,7 +93,10 @@ export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'cr
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "saveCliente");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -113,7 +120,10 @@ export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, '
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "updateCliente");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -130,7 +140,10 @@ export const deleteCliente = async (id: string): Promise<void> => {
     .delete()
     .eq('id', id);
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "deleteCliente");
+    throw new Error(friendlyMessage);
+  }
 };
 
 // Visitadores
@@ -143,7 +156,10 @@ export const getVisitadores = async (): Promise<Visitador[]> => {
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "getVisitadores");
+    throw new Error(friendlyMessage);
+  }
   
   return (data || []).map(visitador => ({
     ...visitador,
@@ -167,7 +183,10 @@ export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm'
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "saveVisitador");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -191,7 +210,10 @@ export const updateVisitador = async (id: string, visitador: Partial<Omit<Visita
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "updateVisitador");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -208,7 +230,10 @@ export const deleteVisitador = async (id: string): Promise<void> => {
     .delete()
     .eq('id', id);
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "deleteVisitador");
+    throw new Error(friendlyMessage);
+  }
 };
 
 // Digitadores
@@ -221,7 +246,10 @@ export const getDigitadores = async (): Promise<Digitador[]> => {
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "getDigitadores");
+    throw new Error(friendlyMessage);
+  }
   
   return (data || []).map(digitador => ({
     ...digitador,
@@ -245,7 +273,10 @@ export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm'
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "saveDigitador");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -269,7 +300,10 @@ export const updateDigitador = async (id: string, digitador: Partial<Omit<Digita
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "updateDigitador");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -286,7 +320,10 @@ export const deleteDigitador = async (id: string): Promise<void> => {
     .delete()
     .eq('id', id);
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "deleteDigitador");
+    throw new Error(friendlyMessage);
+  }
 };
 
 // Vistorias
@@ -299,7 +336,10 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "getVistorias");
+    throw new Error(friendlyMessage);
+  }
   
   return (data || []).map(vistoria => ({
     ...vistoria,
@@ -334,7 +374,10 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "saveVistoria");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -375,7 +418,10 @@ export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "updateVistoria");
+    throw new Error(friendlyMessage);
+  }
   
   return {
     ...data!,
@@ -394,5 +440,8 @@ export const deleteVistoria = async (id: string): Promise<void> => {
     .delete()
     .eq('id', id);
   
-  if (error) throw error;
+  if (error) {
+    const friendlyMessage = getUserFriendlyError(error, "deleteVistoria");
+    throw new Error(friendlyMessage);
+  }
 };

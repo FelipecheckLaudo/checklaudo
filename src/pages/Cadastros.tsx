@@ -40,6 +40,7 @@ import {
   type Digitador,
 } from "@/lib/database";
 import { toast } from "sonner";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 export default function Cadastros() {
   const [activeTab, setActiveTab] = useState("clientes");
@@ -70,7 +71,8 @@ export default function Cadastros() {
       setVisitadores(visitadoresData);
       setDigitadores(digitadoresData);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao carregar dados");
+      const friendlyMessage = getUserFriendlyError(error, "carregar dados");
+      toast.error(friendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +107,8 @@ export default function Cadastros() {
       await loadData();
       setEditingItem(null);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar cadastro");
+      const friendlyMessage = getUserFriendlyError(error, "salvar cadastro");
+      toast.error(friendlyMessage);
     } finally {
       setIsSaving(false);
     }
@@ -138,7 +141,8 @@ export default function Cadastros() {
       setSelectedId(null);
       toast.success("Registro excluído com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao excluir registro");
+      const friendlyMessage = getUserFriendlyError(error, "excluir registro");
+      toast.error(friendlyMessage);
     }
   };
 

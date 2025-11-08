@@ -11,6 +11,7 @@ import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores,
 import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { toast } from "sonner";
 import { clienteSchema } from "@/lib/validations";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 export default function NovaVistoria() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -44,7 +45,8 @@ export default function NovaVistoria() {
         setDigitadores(digitadoresData);
         setVistoriadores(vistoriadoresData);
       } catch (error: any) {
-        toast.error(error.message || "Erro ao carregar dados");
+        const friendlyMessage = getUserFriendlyError(error, "carregar dados");
+        toast.error(friendlyMessage);
       } finally {
         setIsLoading(false);
       }
@@ -140,7 +142,8 @@ export default function NovaVistoria() {
       toast.success("Vistoria cadastrada com sucesso!");
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao cadastrar vistoria");
+      const friendlyMessage = getUserFriendlyError(error, "cadastrar vistoria");
+      toast.error(friendlyMessage);
     } finally {
       setIsSaving(false);
     }

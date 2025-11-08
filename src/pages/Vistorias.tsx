@@ -17,6 +17,7 @@ import { PagamentoDropdown } from "@/components/PagamentoDropdown";
 import { exportVistoriasToPDF } from "@/lib/pdfExport";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
   const [vistorias, setVistorias] = useState<Vistoria[]>([]);
@@ -37,7 +38,8 @@ export default function Vistorias() {
       const data = await getVistorias();
       setVistorias(data);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao carregar vistorias");
+      const friendlyMessage = getUserFriendlyError(error, "carregar vistorias");
+      toast.error(friendlyMessage);
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +53,8 @@ export default function Vistorias() {
       setSelectedVistoria(null);
       toast.success("Vistoria excluída com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao excluir vistoria");
+      const friendlyMessage = getUserFriendlyError(error, "excluir vistoria");
+      toast.error(friendlyMessage);
     }
   };
   const handleEdit = async (data: Partial<Vistoria>) => {
@@ -64,7 +67,8 @@ export default function Vistorias() {
       setSelectedVistoria(null);
       toast.success("Vistoria atualizada com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao atualizar vistoria");
+      const friendlyMessage = getUserFriendlyError(error, "atualizar vistoria");
+      toast.error(friendlyMessage);
     } finally {
       setIsSaving(false);
     }
@@ -77,7 +81,8 @@ export default function Vistorias() {
       await loadVistorias();
       toast.success("Situação atualizada com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao atualizar situação");
+      const friendlyMessage = getUserFriendlyError(error, "atualizar situação");
+      toast.error(friendlyMessage);
     }
   };
   const handlePagamentoChange = async (vistoriaId: string, novoPagamento: string) => {
@@ -88,7 +93,8 @@ export default function Vistorias() {
       await loadVistorias();
       toast.success("Forma de pagamento atualizada com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao atualizar forma de pagamento");
+      const friendlyMessage = getUserFriendlyError(error, "atualizar forma de pagamento");
+      toast.error(friendlyMessage);
     }
   };
   const handleExportPDF = () => {
