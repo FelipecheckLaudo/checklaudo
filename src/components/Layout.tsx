@@ -41,6 +41,14 @@ export default function Layout({
   const isMobile = useIsMobile();
   useEffect(() => {
     fetchLogo();
+    
+    // Listen for logo updates
+    const handleLogoUpdate = () => {
+      fetchLogo();
+    };
+    
+    window.addEventListener('logo-updated', handleLogoUpdate);
+    return () => window.removeEventListener('logo-updated', handleLogoUpdate);
   }, []);
   const fetchLogo = async () => {
     try {
@@ -94,7 +102,7 @@ export default function Layout({
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              {logoUrl ? <img src={logoUrl} alt="Logo" className="h-8 md:h-10 w-auto object-contain" /> : <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />}
+              {logoUrl ? <img src={logoUrl} alt="Logo" className="h-10 md:h-14 w-auto object-contain" /> : <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />}
               <span className="text-lg md:text-xl font-bold">CheckLaudo</span>
             </div>
             

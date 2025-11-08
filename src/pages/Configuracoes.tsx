@@ -137,10 +137,13 @@ export default function Configuracoes() {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL with cache busting
+      const timestamp = new Date().getTime();
       const { data: { publicUrl } } = supabase.storage
         .from("logos")
         .getPublicUrl(filePath);
+      
+      const publicUrlWithCache = `${publicUrl}?t=${timestamp}`;
 
       // Save to database
       const { data: existingSettings } = await supabase
@@ -152,19 +155,22 @@ export default function Configuracoes() {
       if (existingSettings) {
         const { error: updateError } = await supabase
           .from("system_settings")
-          .update({ logo_url: publicUrl })
+          .update({ logo_url: publicUrlWithCache })
           .eq("user_id", user.id);
 
         if (updateError) throw updateError;
       } else {
         const { error: insertError } = await supabase
           .from("system_settings")
-          .insert({ user_id: user.id, logo_url: publicUrl });
+          .insert({ user_id: user.id, logo_url: publicUrlWithCache });
 
         if (insertError) throw insertError;
       }
 
-      setLogoUrl(publicUrl);
+      setLogoUrl(publicUrlWithCache);
+      
+      // Force reload in layout by triggering a storage event
+      window.dispatchEvent(new CustomEvent('logo-updated'));
       toast.success("Logo atualizada com sucesso!");
     } catch (error) {
       logger.error("Error uploading logo", error);
@@ -273,11 +279,11 @@ export default function Configuracoes() {
                     <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
                       {logoUrl ? (
                         <div className="space-y-4">
-                          <div className="flex justify-center">
+                           <div className="flex justify-center">
                             <img 
                               src={logoUrl} 
                               alt="Logo da empresa" 
-                              className="max-h-32 object-contain"
+                              className="max-h-48 object-contain"
                             />
                           </div>
                           <div className="flex gap-2 justify-center">
