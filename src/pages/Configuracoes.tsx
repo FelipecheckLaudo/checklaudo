@@ -100,15 +100,16 @@ export default function Configuracoes() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      toast.error("Por favor, selecione uma imagem válida");
+    // Validate file type (image or video)
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      toast.error("Por favor, selecione uma imagem ou vídeo válido");
       return;
     }
 
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 2MB");
+    // Validate file size (max 10MB for videos, 2MB for images)
+    const maxSize = file.type.startsWith("video/") ? 10 * 1024 * 1024 : 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error(file.type.startsWith("video/") ? "O vídeo deve ter no máximo 10MB" : "A imagem deve ter no máximo 2MB");
       return;
     }
 
@@ -280,11 +281,22 @@ export default function Configuracoes() {
                       {logoUrl ? (
                         <div className="space-y-4">
                            <div className="flex justify-center">
-                            <img 
-                              src={logoUrl} 
-                              alt="Logo da empresa" 
-                              className="max-h-48 object-contain"
-                            />
+                            {logoUrl.includes('.mp4') || logoUrl.includes('.webm') || logoUrl.includes('.mov') ? (
+                              <video 
+                                src={logoUrl} 
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="max-h-48 object-contain"
+                              />
+                            ) : (
+                              <img 
+                                src={logoUrl} 
+                                alt="Logo da empresa" 
+                                className="max-h-48 object-contain"
+                              />
+                            )}
                           </div>
                           <div className="flex gap-2 justify-center">
                             <Button
@@ -321,14 +333,14 @@ export default function Configuracoes() {
                             </Button>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            PNG, JPG ou WEBP (máx. 2MB)
+                            Imagem (PNG, JPG, WEBP - máx. 2MB) ou Vídeo (MP4, WEBM - máx. 10MB)
                           </p>
                         </div>
                       )}
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/*,video/*"
                         onChange={handleFileSelect}
                         className="hidden"
                       />
@@ -336,7 +348,7 @@ export default function Configuracoes() {
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Esta logo será exibida na tela de login e no cabeçalho da aplicação
+                  Esta logo (imagem ou vídeo) será exibida na tela de login e no cabeçalho da aplicação
                 </p>
               </div>
 

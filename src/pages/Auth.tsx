@@ -118,11 +118,22 @@ export default function Auth() {
         <CardHeader className="text-center space-y-4">
           {logoUrl && (
             <div className="flex justify-center">
-              <img 
-                src={logoUrl} 
-                alt="Logo" 
-                className="h-20 w-auto object-contain"
-              />
+              {logoUrl.includes('.mp4') || logoUrl.includes('.webm') || logoUrl.includes('.mov') ? (
+                <video 
+                  src={logoUrl} 
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="h-20 w-auto object-contain"
+                />
+              ) : (
+                <img 
+                  src={logoUrl} 
+                  alt="Logo" 
+                  className="h-20 w-auto object-contain"
+                />
+              )}
             </div>
           )}
           <CardTitle>{isLogin ? "Login" : "Criar Conta"}</CardTitle>

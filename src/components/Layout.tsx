@@ -102,7 +102,22 @@ export default function Layout({
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              {logoUrl ? <img src={logoUrl} alt="Logo" className="h-10 md:h-14 w-auto object-contain" /> : <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />}
+              {logoUrl ? (
+                logoUrl.includes('.mp4') || logoUrl.includes('.webm') || logoUrl.includes('.mov') ? (
+                  <video 
+                    src={logoUrl} 
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="h-10 md:h-14 w-auto object-contain"
+                  />
+                ) : (
+                  <img src={logoUrl} alt="Logo" className="h-10 md:h-14 w-auto object-contain" />
+                )
+              ) : (
+                <ClipboardList className="h-5 w-5 md:h-6 md:w-6" />
+              )}
               <span className="text-lg md:text-xl font-bold">CheckLaudo</span>
             </div>
             
