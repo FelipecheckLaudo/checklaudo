@@ -10,6 +10,8 @@ import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import { InstallButton } from "@/components/InstallButton";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
@@ -113,8 +115,16 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
+      {/* Header with Install and Theme buttons */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
+        <div className="container mx-auto px-4 py-3 flex justify-end items-center gap-2">
+          <InstallButton />
+          <ThemeToggle />
+        </div>
+      </div>
+
+      <Card className="w-full max-w-md mt-16">
         <CardHeader className="text-center space-y-4">
           {logoUrl && (
             <div className="flex justify-center">
