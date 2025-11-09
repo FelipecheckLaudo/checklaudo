@@ -12,6 +12,8 @@ import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { toast } from "sonner";
 import { clienteSchema } from "@/lib/validations";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import { formatCPF, formatPlaca } from "@/lib/formatters";
+import { TIPOS_LAUDO, SITUACOES } from "@/lib/constants";
 export default function NovaVistoria() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -146,18 +148,6 @@ export default function NovaVistoria() {
     } finally {
       setIsSaving(false);
     }
-  };
-  const formatPlaca = (value: string) => {
-    const cleaned = value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-    if (cleaned.length <= 3) return cleaned;
-    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}`;
-  };
-  const formatCPF = (value: string) => {
-    const cleaned = value.replace(/\D/g, "");
-    if (cleaned.length <= 3) return cleaned;
-    if (cleaned.length <= 6) return `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
-    if (cleaned.length <= 9) return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6)}`;
-    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`;
   };
   return <div className="space-y-6 animate-fade-in max-w-4xl">
       <div className="flex items-center gap-4">

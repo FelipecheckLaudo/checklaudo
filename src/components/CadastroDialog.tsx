@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { clienteSchema } from "@/lib/validations";
 import { logger } from "@/lib/logger";
+import { formatCPF } from "@/lib/formatters";
+import { STORAGE_BUCKETS } from "@/lib/constants";
 
 interface CadastroDialogProps {
   open: boolean;
@@ -104,7 +106,7 @@ export function CadastroDialog({
       const filePath = `${user.id}/cadastros/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('vistoria-fotos')
+        .from(STORAGE_BUCKETS.VISTORIA_FOTOS)
         .upload(filePath, selectedFile);
 
       if (uploadError) {
@@ -115,7 +117,7 @@ export function CadastroDialog({
 
       // Use signed URL instead of public URL for security
       const { data: signedUrlData, error: urlError } = await supabase.storage
-        .from('vistoria-fotos')
+        .from(STORAGE_BUCKETS.VISTORIA_FOTOS)
         .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year expiry
 
       if (urlError) {
@@ -156,13 +158,6 @@ export function CadastroDialog({
     }
   };
 
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    }
-    return value;
-  };
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen && !isSaving) {

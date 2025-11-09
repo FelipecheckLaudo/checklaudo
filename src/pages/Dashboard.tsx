@@ -10,6 +10,7 @@ import { DollarSign, FileText, TrendingUp, Users, Award, CalendarIcon } from "lu
 import { format, parseISO, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths, isWithinInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/formatters";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -34,12 +35,6 @@ export default function Dashboard() {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
 
   // Filtrar vistorias por período
   const vistoriasFiltradas = vistorias.filter(v => {

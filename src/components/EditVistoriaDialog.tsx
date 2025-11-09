@@ -21,6 +21,8 @@ import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Vistoria } from "@/lib/database";
+import { formatCPF, formatPlaca } from "@/lib/formatters";
+import { TIPOS_LAUDO, SITUACOES } from "@/lib/constants";
 
 interface EditVistoriaDialogProps {
   open: boolean;
@@ -80,19 +82,6 @@ export function EditVistoriaDialog({
     onSave(formData);
   };
 
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 11) {
-      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    }
-    return value;
-  };
-
-  const formatPlaca = (value: string) => {
-    const cleaned = value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-    if (cleaned.length <= 3) return cleaned;
-    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}`;
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

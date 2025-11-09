@@ -18,6 +18,7 @@ import { exportVistoriasToPDF } from "@/lib/pdfExport";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import { formatDate, formatCurrency } from "@/lib/formatters";
 export default function Vistorias() {
   const [searchTerm, setSearchTerm] = useState("");
   const [vistorias, setVistorias] = useState<Vistoria[]>([]);
@@ -128,20 +129,6 @@ export default function Vistorias() {
     
     return true;
   });
-  const formatDate = (isoDate: string) => {
-    return new Date(isoDate).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit"
-    });
-  };
-  const formatCurrency = (value: string) => {
-    const num = parseFloat(value);
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    }).format(num);
-  };
   return <div className="space-y-4 md:space-y-6 animate-fade-in">
       <div className="flex flex-col gap-3 md:gap-4">
         <h1 className="text-2xl md:text-3xl font-bold text-foreground">Vistorias Diárias</h1>
