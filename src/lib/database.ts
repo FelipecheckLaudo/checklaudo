@@ -56,45 +56,59 @@ export interface Vistoria {
   criadoEm?: string;
 }
 
-// Clientes
-export const getClientes = async (): Promise<Cliente[]> => {
+// ============================================
+// GENERIC CRUD OPERATIONS
+// ============================================
+
+/**
+ * Get authenticated user or throw error
+ */
+const getAuthUser = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Não autenticado");
+  return user;
+};
+
+/**
+ * Generic function to get all records from a table
+ */
+const getRecords = async <T>(tableName: string, operationName: string): Promise<T[]> => {
+  await getAuthUser();
 
   const { data, error } = await (supabase as any)
-    .from('clientes')
+    .from(tableName)
     .select('*')
     .order('created_at', { ascending: false });
   
   if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "getClientes");
+    const friendlyMessage = getUserFriendlyError(error, operationName);
     throw new Error(friendlyMessage);
   }
   
-  return (data || []).map(cliente => ({
-    ...cliente,
-    criadoEm: cliente.created_at
+  return (data || []).map((record: any) => ({
+    ...record,
+    criadoEm: record.created_at
   }));
 };
 
-export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Cliente> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+/**
+ * Generic function to save a record to a table
+ */
+const saveRecord = async <T>(
+  tableName: string, 
+  recordData: any, 
+  operationName: string
+): Promise<T> => {
+  const user = await getAuthUser();
 
   const { data, error } = await (supabase as any)
-    .from('clientes')
-    .insert({
-      nome: cliente.nome,
-      cpf: cliente.cpf,
-      observacoes: cliente.observacoes,
-      foto_url: cliente.foto_url,
-      user_id: user.id
-    })
+    .from(tableName)
+    .insert({ ...recordData, user_id: user.id })
     .select()
     .single();
   
   if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "saveCliente");
+    const friendlyMessage = getUserFriendlyError(error, operationName);
     throw new Error(friendlyMessage);
   }
   
@@ -104,24 +118,26 @@ export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'cr
   };
 };
 
-export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Cliente> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+/**
+ * Generic function to update a record in a table
+ */
+const updateRecord = async <T>(
+  tableName: string,
+  id: string,
+  recordData: any,
+  operationName: string
+): Promise<T> => {
+  await getAuthUser();
 
   const { data, error } = await (supabase as any)
-    .from('clientes')
-    .update({
-      nome: cliente.nome,
-      cpf: cliente.cpf,
-      observacoes: cliente.observacoes,
-      foto_url: cliente.foto_url
-    })
+    .from(tableName)
+    .update(recordData)
     .eq('id', id)
     .select()
     .single();
   
   if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "updateCliente");
+    const friendlyMessage = getUserFriendlyError(error, operationName);
     throw new Error(friendlyMessage);
   }
   
@@ -131,205 +147,107 @@ export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, '
   };
 };
 
-export const deleteCliente = async (id: string): Promise<void> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+/**
+ * Generic function to delete a record from a table
+ */
+const deleteRecord = async (tableName: string, id: string, operationName: string): Promise<void> => {
+  await getAuthUser();
 
   const { error } = await (supabase as any)
-    .from('clientes')
+    .from(tableName)
     .delete()
     .eq('id', id);
   
   if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "deleteCliente");
+    const friendlyMessage = getUserFriendlyError(error, operationName);
     throw new Error(friendlyMessage);
   }
 };
 
-// Visitadores
-export const getVisitadores = async (): Promise<Visitador[]> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+// ============================================
+// CLIENTES
+// ============================================
 
-  const { data, error } = await (supabase as any)
-    .from('vistoriadores')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "getVisitadores");
-    throw new Error(friendlyMessage);
-  }
-  
-  return (data || []).map(visitador => ({
-    ...visitador,
-    criadoEm: visitador.created_at
-  }));
-};
+export const getClientes = async (): Promise<Cliente[]> => 
+  getRecords<Cliente>('clientes', 'getClientes');
 
-export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Visitador> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Cliente> =>
+  saveRecord<Cliente>('clientes', {
+    nome: cliente.nome,
+    cpf: cliente.cpf,
+    observacoes: cliente.observacoes,
+    foto_url: cliente.foto_url,
+  }, 'saveCliente');
 
-  const { data, error } = await (supabase as any)
-    .from('vistoriadores')
-    .insert({
-      nome: visitador.nome,
-      cpf: visitador.cpf,
-      observacoes: visitador.observacoes,
-      foto_url: visitador.foto_url,
-      user_id: user.id
-    })
-    .select()
-    .single();
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "saveVisitador");
-    throw new Error(friendlyMessage);
-  }
-  
-  return {
-    ...data!,
-    criadoEm: data!.created_at
-  };
-};
+export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Cliente> =>
+  updateRecord<Cliente>('clientes', id, {
+    nome: cliente.nome,
+    cpf: cliente.cpf,
+    observacoes: cliente.observacoes,
+    foto_url: cliente.foto_url
+  }, 'updateCliente');
 
-export const updateVisitador = async (id: string, visitador: Partial<Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Visitador> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+export const deleteCliente = async (id: string): Promise<void> =>
+  deleteRecord('clientes', id, 'deleteCliente');
 
-  const { data, error } = await (supabase as any)
-    .from('vistoriadores')
-    .update({
-      nome: visitador.nome,
-      cpf: visitador.cpf,
-      observacoes: visitador.observacoes,
-      foto_url: visitador.foto_url
-    })
-    .eq('id', id)
-    .select()
-    .single();
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "updateVisitador");
-    throw new Error(friendlyMessage);
-  }
-  
-  return {
-    ...data!,
-    criadoEm: data!.created_at
-  };
-};
+// ============================================
+// VISITADORES
+// ============================================
 
-export const deleteVisitador = async (id: string): Promise<void> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+export const getVisitadores = async (): Promise<Visitador[]> =>
+  getRecords<Visitador>('vistoriadores', 'getVisitadores');
 
-  const { error } = await (supabase as any)
-    .from('vistoriadores')
-    .delete()
-    .eq('id', id);
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "deleteVisitador");
-    throw new Error(friendlyMessage);
-  }
-};
+export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Visitador> =>
+  saveRecord<Visitador>('vistoriadores', {
+    nome: visitador.nome,
+    cpf: visitador.cpf,
+    observacoes: visitador.observacoes,
+    foto_url: visitador.foto_url,
+  }, 'saveVisitador');
 
-// Digitadores
-export const getDigitadores = async (): Promise<Digitador[]> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+export const updateVisitador = async (id: string, visitador: Partial<Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Visitador> =>
+  updateRecord<Visitador>('vistoriadores', id, {
+    nome: visitador.nome,
+    cpf: visitador.cpf,
+    observacoes: visitador.observacoes,
+    foto_url: visitador.foto_url
+  }, 'updateVisitador');
 
-  const { data, error } = await (supabase as any)
-    .from('digitadores')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "getDigitadores");
-    throw new Error(friendlyMessage);
-  }
-  
-  return (data || []).map(digitador => ({
-    ...digitador,
-    criadoEm: digitador.created_at
-  }));
-};
+export const deleteVisitador = async (id: string): Promise<void> =>
+  deleteRecord('vistoriadores', id, 'deleteVisitador');
 
-export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Digitador> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+// ============================================
+// DIGITADORES
+// ============================================
 
-  const { data, error } = await (supabase as any)
-    .from('digitadores')
-    .insert({
-      nome: digitador.nome,
-      cpf: digitador.cpf,
-      observacoes: digitador.observacoes,
-      foto_url: digitador.foto_url,
-      user_id: user.id
-    })
-    .select()
-    .single();
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "saveDigitador");
-    throw new Error(friendlyMessage);
-  }
-  
-  return {
-    ...data!,
-    criadoEm: data!.created_at
-  };
-};
+export const getDigitadores = async (): Promise<Digitador[]> =>
+  getRecords<Digitador>('digitadores', 'getDigitadores');
 
-export const updateDigitador = async (id: string, digitador: Partial<Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Digitador> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Digitador> =>
+  saveRecord<Digitador>('digitadores', {
+    nome: digitador.nome,
+    cpf: digitador.cpf,
+    observacoes: digitador.observacoes,
+    foto_url: digitador.foto_url,
+  }, 'saveDigitador');
 
-  const { data, error } = await (supabase as any)
-    .from('digitadores')
-    .update({
-      nome: digitador.nome,
-      cpf: digitador.cpf,
-      observacoes: digitador.observacoes,
-      foto_url: digitador.foto_url
-    })
-    .eq('id', id)
-    .select()
-    .single();
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "updateDigitador");
-    throw new Error(friendlyMessage);
-  }
-  
-  return {
-    ...data!,
-    criadoEm: data!.created_at
-  };
-};
+export const updateDigitador = async (id: string, digitador: Partial<Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Digitador> =>
+  updateRecord<Digitador>('digitadores', id, {
+    nome: digitador.nome,
+    cpf: digitador.cpf,
+    observacoes: digitador.observacoes,
+    foto_url: digitador.foto_url
+  }, 'updateDigitador');
 
-export const deleteDigitador = async (id: string): Promise<void> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+export const deleteDigitador = async (id: string): Promise<void> =>
+  deleteRecord('digitadores', id, 'deleteDigitador');
 
-  const { error } = await (supabase as any)
-    .from('digitadores')
-    .delete()
-    .eq('id', id);
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "deleteDigitador");
-    throw new Error(friendlyMessage);
-  }
-};
+// ============================================
+// VISTORIAS (has special logic, kept separate)
+// ============================================
 
-// Vistorias
 export const getVistorias = async (): Promise<Vistoria[]> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+  await getAuthUser();
 
   const { data, error } = await (supabase as any)
     .from('vistorias')
@@ -350,8 +268,7 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
 };
 
 export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Vistoria> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+  const user = await getAuthUser();
 
   const { data, error } = await (supabase as any)
     .from('vistorias')
@@ -388,8 +305,7 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
 };
 
 export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Vistoria> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
+  await getAuthUser();
 
   const updateData: any = {};
   
@@ -431,17 +347,5 @@ export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria
   };
 };
 
-export const deleteVistoria = async (id: string): Promise<void> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Não autenticado");
-
-  const { error } = await (supabase as any)
-    .from('vistorias')
-    .delete()
-    .eq('id', id);
-  
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "deleteVistoria");
-    throw new Error(friendlyMessage);
-  }
-};
+export const deleteVistoria = async (id: string): Promise<void> =>
+  deleteRecord('vistorias', id, 'deleteVistoria');

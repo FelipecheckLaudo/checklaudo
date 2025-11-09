@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getVistorias } from "@/lib/database";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import { DollarSign, FileText, TrendingUp, Users, Award, CalendarIcon } from "lucide-react";
-import { format, parseISO, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths, isWithinInterval } from "date-fns";
+import { DollarSign, FileText, TrendingUp, Users, Award } from "lucide-react";
+import { parseISO, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths, isWithinInterval, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatters";
+import { DateRangeFilter } from "@/components/filters/DateRangeFilter";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -37,91 +34,101 @@ export default function Dashboard() {
 
 
   // Filtrar vistorias por período
-  const vistoriasFiltradas = vistorias.filter(v => {
-    if (!dataInicial || !dataFinal) return true;
-    const dataVistoria = parseISO(v.created_at);
-    return isWithinInterval(dataVistoria, { start: dataInicial, end: dataFinal });
-  });
-
-  // Cálculos de estatísticas
-  const totalVistorias = vistoriasFiltradas.length;
-  const valorTotal = vistoriasFiltradas.reduce((sum, v) => sum + Number(v.valor || 0), 0);
-  const ticketMedio = totalVistorias > 0 ? valorTotal / totalVistorias : 0;
-
-  // Ranking de vistoriadores por quantidade
-  const vistoriadoresRanking = vistoriasFiltradas.reduce((acc: any, v) => {
-    const nome = v.liberador || "Sem vistoriador";
-    if (!acc[nome]) {
-      acc[nome] = { nome, quantidade: 0, valor: 0 };
-    }
-    acc[nome].quantidade += 1;
-    acc[nome].valor += Number(v.valor || 0);
-    return acc;
-  }, {});
-
-  const topVistoriadores = Object.values(vistoriadoresRanking)
-    .sort((a: any, b: any) => b.quantidade - a.quantidade)
-    .slice(0, 5);
-
-  // Ranking de clientes por quantidade
-  const clientesRanking = vistoriasFiltradas.reduce((acc: any, v) => {
-    const nome = v.cliente_nome || "Sem cliente";
-    if (!acc[nome]) {
-      acc[nome] = { nome, quantidade: 0, valor: 0 };
-    }
-    acc[nome].quantidade += 1;
-    acc[nome].valor += Number(v.valor || 0);
-    return acc;
-  }, {});
-
-  const topClientes = Object.values(clientesRanking)
-    .sort((a: any, b: any) => b.quantidade - a.quantidade)
-    .slice(0, 5);
-
-  // Distribuição por tipo
-  const distribuicaoPorTipo = vistoriasFiltradas.reduce((acc: any, v) => {
-    const tipo = v.tipo || "Sem tipo";
-    acc[tipo] = (acc[tipo] || 0) + 1;
-    return acc;
-  }, {});
-
-  const dadosTipo = Object.entries(distribuicaoPorTipo).map(([name, value]) => ({
-    name,
-    value
-  }));
-
-  // Distribuição por situação
-  const distribuicaoPorSituacao = vistoriasFiltradas.reduce((acc: any, v) => {
-    const situacao = v.situacao || "Sem situação";
-    acc[situacao] = (acc[situacao] || 0) + 1;
-    return acc;
-  }, {});
-
-  const dadosSituacao = Object.entries(distribuicaoPorSituacao).map(([name, value]) => ({
-    name,
-    value
-  }));
-
-  // Evolução temporal (baseado no período selecionado)
-  const meses = dataInicial && dataFinal 
-    ? eachMonthOfInterval({ start: dataInicial, end: dataFinal })
-    : [];
-
-  const evolucaoTemporal = meses.map(mes => {
-    const inicioMes = startOfMonth(mes);
-    const fimMes = endOfMonth(mes);
-    
-    const vistoriasMes = vistoriasFiltradas.filter(v => {
+  const vistoriasFiltradas = useMemo(() => {
+    return vistorias.filter(v => {
+      if (!dataInicial || !dataFinal) return true;
       const dataVistoria = parseISO(v.created_at);
-      return dataVistoria >= inicioMes && dataVistoria <= fimMes;
+      return isWithinInterval(dataVistoria, { start: dataInicial, end: dataFinal });
     });
+  }, [vistorias, dataInicial, dataFinal]);
 
-    return {
-      mes: format(mes, 'MMM/yy', { locale: ptBR }),
-      quantidade: vistoriasMes.length,
-      valor: vistoriasMes.reduce((sum, v) => sum + Number(v.valor || 0), 0)
-    };
-  });
+  // Cálculos de estatísticas (memoizados)
+  const stats = useMemo(() => {
+    const total = vistoriasFiltradas.length;
+    const valorTotal = vistoriasFiltradas.reduce((sum, v) => sum + Number(v.valor || 0), 0);
+    const ticketMedio = total > 0 ? valorTotal / total : 0;
+
+    return { total, valorTotal, ticketMedio };
+  }, [vistoriasFiltradas]);
+
+  // Ranking de vistoriadores (memoizado)
+  const topVistoriadores = useMemo(() => {
+    const ranking = vistoriasFiltradas.reduce((acc: any, v) => {
+      const nome = v.liberador || "Sem vistoriador";
+      if (!acc[nome]) {
+        acc[nome] = { nome, quantidade: 0, valor: 0 };
+      }
+      acc[nome].quantidade += 1;
+      acc[nome].valor += Number(v.valor || 0);
+      return acc;
+    }, {});
+
+    return Object.values(ranking)
+      .sort((a: any, b: any) => b.quantidade - a.quantidade)
+      .slice(0, 5);
+  }, [vistoriasFiltradas]);
+
+  // Ranking de clientes (memoizado)
+  const topClientes = useMemo(() => {
+    const ranking = vistoriasFiltradas.reduce((acc: any, v) => {
+      const nome = v.cliente_nome || "Sem cliente";
+      if (!acc[nome]) {
+        acc[nome] = { nome, quantidade: 0, valor: 0 };
+      }
+      acc[nome].quantidade += 1;
+      acc[nome].valor += Number(v.valor || 0);
+      return acc;
+    }, {});
+
+    return Object.values(ranking)
+      .sort((a: any, b: any) => b.quantidade - a.quantidade)
+      .slice(0, 5);
+  }, [vistoriasFiltradas]);
+
+  // Distribuição por tipo (memoizado)
+  const dadosTipo = useMemo(() => {
+    const distribuicao = vistoriasFiltradas.reduce((acc: any, v) => {
+      const tipo = v.tipo || "Sem tipo";
+      acc[tipo] = (acc[tipo] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(distribuicao).map(([name, value]) => ({ name, value }));
+  }, [vistoriasFiltradas]);
+
+  // Distribuição por situação (memoizado)
+  const dadosSituacao = useMemo(() => {
+    const distribuicao = vistoriasFiltradas.reduce((acc: any, v) => {
+      const situacao = v.situacao || "Sem situação";
+      acc[situacao] = (acc[situacao] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(distribuicao).map(([name, value]) => ({ name, value }));
+  }, [vistoriasFiltradas]);
+
+  // Evolução temporal (memoizado)
+  const evolucaoTemporal = useMemo(() => {
+    const meses = dataInicial && dataFinal 
+      ? eachMonthOfInterval({ start: dataInicial, end: dataFinal })
+      : [];
+
+    return meses.map(mes => {
+      const inicioMes = startOfMonth(mes);
+      const fimMes = endOfMonth(mes);
+      
+      const vistoriasMes = vistoriasFiltradas.filter(v => {
+        const dataVistoria = parseISO(v.created_at);
+        return dataVistoria >= inicioMes && dataVistoria <= fimMes;
+      });
+
+      return {
+        mes: format(mes, 'MMM/yy', { locale: ptBR }),
+        quantidade: vistoriasMes.length,
+        valor: vistoriasMes.reduce((sum, v) => sum + Number(v.valor || 0), 0)
+      };
+    });
+  }, [vistoriasFiltradas, dataInicial, dataFinal]);
 
   if (isLoading) {
     return (
@@ -152,61 +159,16 @@ export default function Dashboard() {
           <CardDescription>Selecione o intervalo de datas para visualizar</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Data Inicial</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal",
-                      !dataInicial && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dataInicial ? format(dataInicial, "PPP", { locale: ptBR }) : "Selecione a data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dataInicial}
-                    onSelect={setDataInicial}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Data Final</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal",
-                      !dataFinal && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dataFinal ? format(dataFinal, "PPP", { locale: ptBR }) : "Selecione a data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dataFinal}
-                    onSelect={setDataFinal}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+          <DateRangeFilter
+            dataInicial={dataInicial}
+            dataFinal={dataFinal}
+            onDataInicialChange={setDataInicial}
+            onDataFinalChange={setDataFinal}
+            onClear={() => {
+              setDataInicial(undefined);
+              setDataFinal(undefined);
+            }}
+          />
         </CardContent>
       </Card>
 
@@ -218,7 +180,7 @@ export default function Dashboard() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalVistorias}</div>
+            <div className="text-2xl font-bold">{stats.total}</div>
             <p className="text-xs text-muted-foreground">Laudos cadastrados</p>
           </CardContent>
         </Card>
@@ -229,7 +191,7 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(valorTotal)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.valorTotal)}</div>
             <p className="text-xs text-muted-foreground">Receita total</p>
           </CardContent>
         </Card>
@@ -240,7 +202,7 @@ export default function Dashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(ticketMedio)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.ticketMedio)}</div>
             <p className="text-xs text-muted-foreground">Por laudo</p>
           </CardContent>
         </Card>
@@ -251,7 +213,7 @@ export default function Dashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Object.keys(vistoriadoresRanking).length}</div>
+            <div className="text-2xl font-bold">{topVistoriadores.length}</div>
             <p className="text-xs text-muted-foreground">No sistema</p>
           </CardContent>
         </Card>
