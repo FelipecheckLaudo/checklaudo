@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Upload, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores, type Cliente, type Digitador, type Visitador } from "@/lib/database";
 import { PagamentoSelect } from "@/components/PagamentoSelect";
+import { ClienteFormSection } from "@/components/forms/ClienteFormSection";
+import { ResponsaveisFormSection } from "@/components/forms/ResponsaveisFormSection";
 import { toast } from "sonner";
 import { clienteSchema } from "@/lib/validations";
 import { getUserFriendlyError } from "@/lib/errorHandler";
-import { formatCPF, formatPlaca } from "@/lib/formatters";
-import { TIPOS_LAUDO, SITUACOES } from "@/lib/constants";
+import { formatPlaca } from "@/lib/formatters";
+import { SITUACOES } from "@/lib/constants";
 export default function NovaVistoria() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -272,78 +273,18 @@ export default function NovaVistoria() {
           <CardHeader>
             <CardTitle>Cliente</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <Label>Tipo de Cliente</Label>
-              <RadioGroup value={tipoCliente} onValueChange={(value: "cadastrado" | "novo" | "particular") => {
-              setTipoCliente(value);
-              setFormData({
-                ...formData,
-                clienteId: ""
-              });
-              setNovoCliente({
-                nome: "",
-                cpf: ""
-              });
-            }} disabled={isSaving}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="cadastrado" id="cadastrado" />
-                  <Label htmlFor="cadastrado" className="font-normal cursor-pointer">Cliente Cadastrado</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="novo" id="novo" />
-                  <Label htmlFor="novo" className="font-normal cursor-pointer">Novo Cliente (Cadastrar no Sistema)</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="particular" id="particular" />
-                  <Label htmlFor="particular" className="font-normal cursor-pointer">Cliente Particular (Apenas para Organização)</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {tipoCliente === "cadastrado" && <div className="space-y-2">
-                <Label htmlFor="cliente">Selecionar Cliente <span className="text-destructive">*</span></Label>
-                {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Carregando clientes...</span>
-                  </div> : clientes.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
-                    Nenhum cliente cadastrado. Selecione outra opção acima.
-                  </div> : <Select value={formData.clienteId} onValueChange={value => setFormData({
-              ...formData,
-              clienteId: value
-            })} disabled={isSaving}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um cliente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {clientes.map(cliente => <SelectItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome} - {cliente.cpf}
-                        </SelectItem>)}
-                    </SelectContent>
-                  </Select>}
-              </div>}
-
-            {(tipoCliente === "novo" || tipoCliente === "particular") && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="novoClienteNome">
-                    Nome do Cliente <span className="text-destructive">*</span>
-                  </Label>
-                  <Input id="novoClienteNome" placeholder="Ex: João Silva" value={novoCliente.nome} onChange={e => setNovoCliente({
-                ...novoCliente,
-                nome: e.target.value.toUpperCase()
-              })} disabled={isSaving} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="novoClienteCpf">
-                    CPF do Cliente <span className="text-destructive">*</span>
-                  </Label>
-                  <Input id="novoClienteCpf" placeholder="123.456.789-00" value={novoCliente.cpf} onChange={e => setNovoCliente({
-                ...novoCliente,
-                cpf: formatCPF(e.target.value)
-              })} maxLength={14} disabled={isSaving} />
-                </div>
-              </div>}
+          <CardContent>
+            <ClienteFormSection
+              tipoCliente={tipoCliente}
+              setTipoCliente={setTipoCliente}
+              clienteId={formData.clienteId}
+              setClienteId={(id) => setFormData({ ...formData, clienteId: id })}
+              novoCliente={novoCliente}
+              setNovoCliente={setNovoCliente}
+              clientes={clientes}
+              isLoading={isLoading}
+              isSaving={isSaving}
+            />
           </CardContent>
         </Card>
 
@@ -353,52 +294,17 @@ export default function NovaVistoria() {
           <CardHeader>
             <CardTitle>Responsáveis</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="digitador">Digitador</Label>
-                {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Carregando...</span>
-                  </div> : digitadores.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
-                    Nenhum digitador cadastrado
-                  </div> : <Select value={formData.digitador} onValueChange={value => setFormData({
-                ...formData,
-                digitador: value
-              })} disabled={isSaving}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um digitador" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {digitadores.map(digitador => <SelectItem key={digitador.id} value={digitador.nome}>
-                          {digitador.nome}
-                        </SelectItem>)}
-                    </SelectContent>
-                  </Select>}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="liberador">Vistoriador</Label>
-                {isLoading ? <div className="flex items-center gap-2 py-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Carregando...</span>
-                  </div> : vistoriadores.length === 0 ? <div className="text-sm text-muted-foreground bg-muted p-4 rounded-lg">
-                    Nenhum vistoriador cadastrado
-                  </div> : <Select value={formData.liberador} onValueChange={value => setFormData({
-                ...formData,
-                liberador: value
-              })} disabled={isSaving}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um vistoriador" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {vistoriadores.map(vistoriador => <SelectItem key={vistoriador.id} value={vistoriador.nome}>
-                          {vistoriador.nome}
-                        </SelectItem>)}
-                    </SelectContent>
-                  </Select>}
-              </div>
-            </div>
+          <CardContent>
+            <ResponsaveisFormSection
+              digitador={formData.digitador}
+              setDigitador={(value) => setFormData({ ...formData, digitador: value })}
+              liberador={formData.liberador}
+              setLiberador={(value) => setFormData({ ...formData, liberador: value })}
+              digitadores={digitadores}
+              vistoriadores={vistoriadores}
+              isLoading={isLoading}
+              isSaving={isSaving}
+            />
           </CardContent>
         </Card>
 

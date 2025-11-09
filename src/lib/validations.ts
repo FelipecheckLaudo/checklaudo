@@ -1,30 +1,9 @@
 import { z } from "zod";
 
-// CPF validation with proper format and checksum
+// Simplified CPF validation (format only)
 const validateCPF = (cpf: string): boolean => {
   const cleanCPF = cpf.replace(/[^\d]/g, "");
-  
-  if (cleanCPF.length !== 11) return false;
-  if (/^(\d)\1+$/.test(cleanCPF)) return false; // All same digits
-  
-  // Validate checksum digits
-  let sum = 0;
-  for (let i = 0; i < 9; i++) {
-    sum += parseInt(cleanCPF.charAt(i)) * (10 - i);
-  }
-  let checkDigit = 11 - (sum % 11);
-  if (checkDigit >= 10) checkDigit = 0;
-  if (checkDigit !== parseInt(cleanCPF.charAt(9))) return false;
-  
-  sum = 0;
-  for (let i = 0; i < 10; i++) {
-    sum += parseInt(cleanCPF.charAt(i)) * (11 - i);
-  }
-  checkDigit = 11 - (sum % 11);
-  if (checkDigit >= 10) checkDigit = 0;
-  if (checkDigit !== parseInt(cleanCPF.charAt(10))) return false;
-  
-  return true;
+  return cleanCPF.length === 11 && !/^(\d)\1+$/.test(cleanCPF);
 };
 
 // Cliente validation schema

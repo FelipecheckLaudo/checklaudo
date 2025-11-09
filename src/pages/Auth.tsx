@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
-import { logger } from "@/lib/logger";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import { InstallButton } from "@/components/InstallButton";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -58,7 +57,7 @@ export default function Auth() {
         setLogoUrl(data.logo_url);
       }
     } catch (error) {
-      logger.error("Error fetching logo", error);
+      if (import.meta.env.DEV) console.error("Error fetching logo", error);
     }
   };
 

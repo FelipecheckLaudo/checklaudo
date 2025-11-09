@@ -15,7 +15,6 @@ import { Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { clienteSchema } from "@/lib/validations";
-import { logger } from "@/lib/logger";
 import { formatCPF } from "@/lib/formatters";
 import { STORAGE_BUCKETS } from "@/lib/constants";
 
@@ -110,7 +109,7 @@ export function CadastroDialog({
         .upload(filePath, selectedFile);
 
       if (uploadError) {
-        logger.error("Error uploading image", uploadError);
+        if (import.meta.env.DEV) console.error("Error uploading image", uploadError);
         toast.error("Erro ao fazer upload da imagem");
         throw uploadError;
       }
@@ -121,14 +120,14 @@ export function CadastroDialog({
         .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year expiry
 
       if (urlError) {
-        logger.error("Error creating signed URL", urlError);
+        if (import.meta.env.DEV) console.error("Error creating signed URL", urlError);
         toast.error("Erro ao processar imagem");
         throw urlError;
       }
 
       return signedUrlData.signedUrl;
     } catch (error) {
-      logger.error("Upload failed", error);
+      if (import.meta.env.DEV) console.error("Upload failed", error);
       return null;
     }
   };
@@ -153,7 +152,7 @@ export function CadastroDialog({
       setPreviewUrl("");
       onOpenChange(false);
     } catch (error) {
-      logger.error("Error saving cadastro", error);
+      if (import.meta.env.DEV) console.error("Error saving cadastro", error);
       toast.error("Erro ao salvar");
     }
   };

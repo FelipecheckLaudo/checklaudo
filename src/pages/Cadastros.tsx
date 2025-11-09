@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, Users, UserCheck, UserCog, Trash2, Loader2, Pencil } from "lucide-react";
+import { useCrudOperations } from "@/hooks/useCrudOperations";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -48,70 +49,47 @@ export default function Cadastros() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+
+  const clientesOps = useCrudOperations<Cliente>({
+    getFn: getClientes,
+    saveFn: saveCliente,
+    updateFn: updateCliente,
+    deleteFn: deleteCliente,
+  });
   
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [visitadores, setVisitadores] = useState<Visitador[]>([]);
-  const [digitadores, setDigitadores] = useState<Digitador[]>([]);
+  const visitadoresOps = useCrudOperations<Visitador>({
+    getFn: getVisitadores,
+    saveFn: saveVisitador,
+    updateFn: updateVisitador,
+    deleteFn: deleteVisitador,
+  });
+  
+  const digitadoresOps = useCrudOperations<Digitador>({
+    getFn: getDigitadores,
+    saveFn: saveDigitador,
+    updateFn: updateDigitador,
+    deleteFn: deleteDigitador,
+  });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const [clientesData, visitadoresData, digitadoresData] = await Promise.all([
-        getClientes(),
-        getVisitadores(),
-        getDigitadores()
-      ]);
-      setClientes(clientesData);
-      setVisitadores(visitadoresData);
-      setDigitadores(digitadoresData);
-    } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "carregar dados");
-      toast.error(friendlyMessage);
-    } finally {
-      setIsLoading(false);
-    }
+  const getCurrentOps = () => {
+    if (activeTab === "clientes") return clientesOps;
+    if (activeTab === "visitadores") return visitadoresOps;
+    return digitadoresOps;
   };
 
+  const { data: clientes } = clientesOps;
+  const { data: visitadores } = visitadoresOps;
+  const { data: digitadores } = digitadoresOps;
+  const { isLoading, isSaving } = getCurrentOps();
+
   const handleSave = async (data: { nome: string; cpf: string; observacoes: string; foto_url?: string }) => {
-    try {
-      setIsSaving(true);
-      
-      if (editingItem) {
-        // Modo edição
-        if (activeTab === "clientes") {
-          await updateCliente(editingItem.id, data);
-        } else if (activeTab === "visitadores") {
-          await updateVisitador(editingItem.id, data);
-        } else {
-          await updateDigitador(editingItem.id, data);
-        }
-        toast.success("Cadastro atualizado com sucesso!");
-      } else {
-        // Modo criação
-        if (activeTab === "clientes") {
-          await saveCliente(data);
-        } else if (activeTab === "visitadores") {
-          await saveVisitador(data);
-        } else {
-          await saveDigitador(data);
-        }
-        toast.success("Cadastro salvo com sucesso!");
-      }
-      
-      await loadData();
-      setEditingItem(null);
-    } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "salvar cadastro");
-      toast.error(friendlyMessage);
-    } finally {
-      setIsSaving(false);
+    const ops = getCurrentOps();
+    if (editingItem) {
+      await ops.update(editingItem.id, data);
+    } else {
+      await ops.save(data);
     }
+    setEditingItem(null);
   };
 
   const handleEdit = (item: any) => {
@@ -126,24 +104,9 @@ export default function Cadastros() {
 
   const handleDelete = async () => {
     if (!selectedId) return;
-    
-    try {
-      if (activeTab === "clientes") {
-        await deleteCliente(selectedId);
-      } else if (activeTab === "visitadores") {
-        await deleteVisitador(selectedId);
-      } else {
-        await deleteDigitador(selectedId);
-      }
-      
-      await loadData();
-      setDeleteDialogOpen(false);
-      setSelectedId(null);
-      toast.success("Registro excluído com sucesso!");
-    } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "excluir registro");
-      toast.error(friendlyMessage);
-    }
+    await getCurrentOps().remove(selectedId);
+    setDeleteDialogOpen(false);
+    setSelectedId(null);
   };
 
   const DataTable = ({ data }: { data: any[] }) => {
