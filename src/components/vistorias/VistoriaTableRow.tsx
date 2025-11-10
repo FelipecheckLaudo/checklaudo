@@ -6,7 +6,7 @@ import { SituacaoDropdown } from "@/components/SituacaoDropdown";
 import { PagamentoDropdown } from "@/components/PagamentoDropdown";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
-import type { Vistoria } from "@/lib/database";
+import type { Vistoria } from "@/lib/types";
 
 interface VistoriaTableRowProps {
   vistoria: Vistoria;

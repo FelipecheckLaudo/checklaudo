@@ -1,64 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getUserFriendlyError } from "./errorHandler";
+import type { Cliente, Digitador, Visitador, Vistoria } from "./types";
 
-export interface Cliente {
-  id: string;
-  nome: string;
-  cpf: string;
-  observacoes: string;
-  foto_url?: string;
-  user_id?: string;
-  created_at?: string;
-  criadoEm?: string;
-}
-
-export interface Visitador {
-  id: string;
-  nome: string;
-  cpf: string;
-  observacoes: string;
-  foto_url?: string;
-  user_id?: string;
-  created_at?: string;
-  criadoEm?: string;
-}
-
-export interface Digitador {
-  id: string;
-  nome: string;
-  cpf: string;
-  observacoes: string;
-  foto_url?: string;
-  user_id?: string;
-  created_at?: string;
-  criadoEm?: string;
-}
-
-export interface Vistoria {
-  id: string;
-  modelo: string;
-  placa: string;
-  pagamento: string;
-  valor: string;
-  situacao: string;
-  tipo: string;
-  cliente_id: string | null;
-  clienteId?: string;
-  cliente_nome: string;
-  clienteNome?: string;
-  cliente_cpf?: string;
-  digitador: string;
-  liberador: string;
-  fotos: string[];
-  modalidade: string;
-  user_id?: string;
-  created_at?: string;
-  criadoEm?: string;
-}
-
-// ============================================
-// GENERIC CRUD OPERATIONS
-// ============================================
+// Re-export types for backward compatibility
+export type { Cliente, Digitador, Visitador, Vistoria };
 
 /**
  * Get authenticated user or throw error
@@ -168,82 +113,31 @@ const deleteRecord = async (tableName: string, id: string, operationName: string
 // CLIENTES
 // ============================================
 
-export const getClientes = async (): Promise<Cliente[]> => 
-  getRecords<Cliente>('clientes', 'getClientes');
-
-export const saveCliente = async (cliente: Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Cliente> =>
-  saveRecord<Cliente>('clientes', {
-    nome: cliente.nome,
-    cpf: cliente.cpf,
-    observacoes: cliente.observacoes,
-    foto_url: cliente.foto_url,
-  }, 'saveCliente');
-
-export const updateCliente = async (id: string, cliente: Partial<Omit<Cliente, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Cliente> =>
-  updateRecord<Cliente>('clientes', id, {
-    nome: cliente.nome,
-    cpf: cliente.cpf,
-    observacoes: cliente.observacoes,
-    foto_url: cliente.foto_url
-  }, 'updateCliente');
-
-export const deleteCliente = async (id: string): Promise<void> =>
-  deleteRecord('clientes', id, 'deleteCliente');
+export const getClientes = async (): Promise<Cliente[]> => getRecords<Cliente>('clientes', 'getClientes');
+export const saveCliente = async (cliente: any): Promise<Cliente> => saveRecord<Cliente>('clientes', cliente, 'saveCliente');
+export const updateCliente = async (id: string, cliente: any): Promise<Cliente> => updateRecord<Cliente>('clientes', id, cliente, 'updateCliente');
+export const deleteCliente = async (id: string): Promise<void> => deleteRecord('clientes', id, 'deleteCliente');
 
 // ============================================
 // VISITADORES
 // ============================================
 
-export const getVisitadores = async (): Promise<Visitador[]> =>
-  getRecords<Visitador>('vistoriadores', 'getVisitadores');
-
-export const saveVisitador = async (visitador: Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Visitador> =>
-  saveRecord<Visitador>('vistoriadores', {
-    nome: visitador.nome,
-    cpf: visitador.cpf,
-    observacoes: visitador.observacoes,
-    foto_url: visitador.foto_url,
-  }, 'saveVisitador');
-
-export const updateVisitador = async (id: string, visitador: Partial<Omit<Visitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Visitador> =>
-  updateRecord<Visitador>('vistoriadores', id, {
-    nome: visitador.nome,
-    cpf: visitador.cpf,
-    observacoes: visitador.observacoes,
-    foto_url: visitador.foto_url
-  }, 'updateVisitador');
-
-export const deleteVisitador = async (id: string): Promise<void> =>
-  deleteRecord('vistoriadores', id, 'deleteVisitador');
+export const getVisitadores = async (): Promise<Visitador[]> => getRecords<Visitador>('vistoriadores', 'getVisitadores');
+export const saveVisitador = async (visitador: any): Promise<Visitador> => saveRecord<Visitador>('vistoriadores', visitador, 'saveVisitador');
+export const updateVisitador = async (id: string, visitador: any): Promise<Visitador> => updateRecord<Visitador>('vistoriadores', id, visitador, 'updateVisitador');
+export const deleteVisitador = async (id: string): Promise<void> => deleteRecord('vistoriadores', id, 'deleteVisitador');
 
 // ============================================
 // DIGITADORES
 // ============================================
 
-export const getDigitadores = async (): Promise<Digitador[]> =>
-  getRecords<Digitador>('digitadores', 'getDigitadores');
-
-export const saveDigitador = async (digitador: Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Digitador> =>
-  saveRecord<Digitador>('digitadores', {
-    nome: digitador.nome,
-    cpf: digitador.cpf,
-    observacoes: digitador.observacoes,
-    foto_url: digitador.foto_url,
-  }, 'saveDigitador');
-
-export const updateDigitador = async (id: string, digitador: Partial<Omit<Digitador, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Digitador> =>
-  updateRecord<Digitador>('digitadores', id, {
-    nome: digitador.nome,
-    cpf: digitador.cpf,
-    observacoes: digitador.observacoes,
-    foto_url: digitador.foto_url
-  }, 'updateDigitador');
-
-export const deleteDigitador = async (id: string): Promise<void> =>
-  deleteRecord('digitadores', id, 'deleteDigitador');
+export const getDigitadores = async (): Promise<Digitador[]> => getRecords<Digitador>('digitadores', 'getDigitadores');
+export const saveDigitador = async (digitador: any): Promise<Digitador> => saveRecord<Digitador>('digitadores', digitador, 'saveDigitador');
+export const updateDigitador = async (id: string, digitador: any): Promise<Digitador> => updateRecord<Digitador>('digitadores', id, digitador, 'updateDigitador');
+export const deleteDigitador = async (id: string): Promise<void> => deleteRecord('digitadores', id, 'deleteDigitador');
 
 // ============================================
-// VISTORIAS (has special logic, kept separate)
+// VISTORIAS (has special logic)
 // ============================================
 
 export const getVistorias = async (): Promise<Vistoria[]> => {
@@ -259,7 +153,7 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
     throw new Error(friendlyMessage);
   }
   
-  return (data || []).map(vistoria => ({
+  return (data || []).map((vistoria: any) => ({
     ...vistoria,
     criadoEm: vistoria.created_at,
     clienteId: vistoria.cliente_id,
@@ -267,24 +161,16 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
   }));
 };
 
-export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 'created_at' | 'user_id'>): Promise<Vistoria> => {
+export const saveVistoria = async (vistoria: any): Promise<Vistoria> => {
   const user = await getAuthUser();
 
   const { data, error } = await (supabase as any)
     .from('vistorias')
     .insert({
-      modelo: vistoria.modelo,
-      placa: vistoria.placa,
-      pagamento: vistoria.pagamento,
+      ...vistoria,
       valor: typeof vistoria.valor === 'string' ? parseFloat(vistoria.valor.replace(/[^\d,]/g, '').replace(',', '.')) : vistoria.valor,
-      situacao: vistoria.situacao,
-      tipo: vistoria.tipo,
-      modalidade: vistoria.modalidade,
       cliente_id: vistoria.cliente_id || vistoria.clienteId,
       cliente_nome: vistoria.cliente_nome || vistoria.clienteNome,
-      cliente_cpf: vistoria.cliente_cpf,
-      digitador: vistoria.digitador,
-      liberador: vistoria.liberador,
       fotos: vistoria.fotos || [],
       user_id: user.id
     })
@@ -304,28 +190,16 @@ export const saveVistoria = async (vistoria: Omit<Vistoria, 'id' | 'criadoEm' | 
   };
 };
 
-export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria, 'id' | 'criadoEm' | 'created_at' | 'user_id'>>): Promise<Vistoria> => {
+export const updateVistoria = async (id: string, vistoria: any): Promise<Vistoria> => {
   await getAuthUser();
 
-  const updateData: any = {};
+  const updateData: any = { ...vistoria };
   
-  if (vistoria.modelo !== undefined) updateData.modelo = vistoria.modelo;
-  if (vistoria.placa !== undefined) updateData.placa = vistoria.placa;
-  if (vistoria.pagamento !== undefined) updateData.pagamento = vistoria.pagamento;
   if (vistoria.valor !== undefined) {
     updateData.valor = typeof vistoria.valor === 'string'
       ? parseFloat(vistoria.valor.replace(/[^\d,]/g, '').replace(',', '.'))
       : vistoria.valor;
   }
-  if (vistoria.situacao !== undefined) updateData.situacao = vistoria.situacao;
-  if (vistoria.tipo !== undefined) updateData.tipo = vistoria.tipo;
-  if (vistoria.modalidade !== undefined) updateData.modalidade = vistoria.modalidade;
-  if (vistoria.cliente_id !== undefined) updateData.cliente_id = vistoria.cliente_id;
-  if (vistoria.cliente_nome !== undefined) updateData.cliente_nome = vistoria.cliente_nome;
-  if (vistoria.cliente_cpf !== undefined) updateData.cliente_cpf = vistoria.cliente_cpf;
-  if (vistoria.digitador !== undefined) updateData.digitador = vistoria.digitador;
-  if (vistoria.liberador !== undefined) updateData.liberador = vistoria.liberador;
-  if (vistoria.fotos !== undefined) updateData.fotos = vistoria.fotos;
 
   const { data, error } = await (supabase as any)
     .from('vistorias')
@@ -347,5 +221,4 @@ export const updateVistoria = async (id: string, vistoria: Partial<Omit<Vistoria
   };
 };
 
-export const deleteVistoria = async (id: string): Promise<void> =>
-  deleteRecord('vistorias', id, 'deleteVistoria');
+export const deleteVistoria = async (id: string): Promise<void> => deleteRecord('vistorias', id, 'deleteVistoria');

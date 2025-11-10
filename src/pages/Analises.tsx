@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getVistorias, getClientes, getVisitadores, getDigitadores, type Vistoria } from "@/lib/database";
+import { getVistorias, getClientes, getVisitadores, getDigitadores } from "@/lib/database";
+import type { Vistoria } from "@/lib/types";
 import { exportVistoriasToPDF } from "@/lib/pdfExport";
 import { toast } from "sonner";
 import { format, isWithinInterval, subMonths } from "date-fns";

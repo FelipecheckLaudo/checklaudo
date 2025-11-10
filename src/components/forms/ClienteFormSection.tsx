@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { formatCPF } from "@/lib/formatters";
-import type { Cliente } from "@/lib/database";
+import type { Cliente } from "@/lib/types";
 
 interface ClienteFormSectionProps {
   tipoCliente: "cadastrado" | "novo" | "particular";

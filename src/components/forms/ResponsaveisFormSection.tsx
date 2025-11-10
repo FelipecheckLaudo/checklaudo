@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import type { Digitador, Visitador } from "@/lib/database";
+import type { Digitador, Visitador } from "@/lib/types";
 
 interface ResponsaveisFormSectionProps {
   digitador: string;

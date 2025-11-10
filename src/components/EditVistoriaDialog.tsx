@@ -20,7 +20,7 @@ import {
 import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import type { Vistoria } from "@/lib/database";
+import type { Vistoria } from "@/lib/types";
 import { formatCPF, formatPlaca } from "@/lib/formatters";
 import { TIPOS_LAUDO, SITUACOES } from "@/lib/constants";
 
