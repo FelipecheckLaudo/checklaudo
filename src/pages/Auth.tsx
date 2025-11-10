@@ -7,15 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { z } from "zod";
-import { getUserFriendlyError } from "@/lib/errorHandler";
 import { InstallButton } from "@/components/InstallButton";
 import ThemeToggle from "@/components/ThemeToggle";
-
-const authSchema = z.object({
-  email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
-  password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
-});
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -56,58 +49,37 @@ export default function Auth() {
       if (data?.logo_url) {
         setLogoUrl(data.logo_url);
       }
-    } catch (error) {
-      if (import.meta.env.DEV) console.error("Error fetching logo", error);
+    } catch {
+      // Ignore logo errors
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate inputs
-    const validation = authSchema.safeParse({ email, password });
-    if (!validation.success) {
-      validation.error.errors.forEach((error) => {
-        toast.error(error.message);
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
-          const friendlyMessage = getUserFriendlyError(error, "login");
-          toast.error(friendlyMessage);
+          toast.error(error.message || "Email ou senha incorretos");
           return;
         }
-
-        toast.success("Login realizado com sucesso!");
+        toast.success("Login realizado!");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-          },
+          options: { emailRedirectTo: `${window.location.origin}/` }
         });
-
         if (error) {
-          const friendlyMessage = getUserFriendlyError(error, "signup");
-          toast.error(friendlyMessage);
+          toast.error(error.message || "Erro ao criar conta");
           return;
         }
-
-        toast.success("Conta criada com sucesso!");
+        toast.success("Conta criada!");
       }
-    } catch (error) {
-      toast.error("Ocorreu um erro. Tente novamente.");
+    } catch {
+      toast.error("Erro de conexão");
     } finally {
       setLoading(false);
     }

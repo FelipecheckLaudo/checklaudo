@@ -39,8 +39,7 @@ export default function Vistorias() {
       const data = await getVistorias();
       setVistorias(data);
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "carregar vistorias");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     } finally {
       setIsLoading(false);
     }
@@ -53,10 +52,9 @@ export default function Vistorias() {
       await loadVistorias();
       setDeleteDialogOpen(false);
       setSelectedVistoria(null);
-      toast.success("Vistoria excluída com sucesso!");
+      toast.success("Vistoria excluída!");
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "excluir vistoria");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     }
   };
 
@@ -68,10 +66,9 @@ export default function Vistorias() {
       await loadVistorias();
       setEditDialogOpen(false);
       setSelectedVistoria(null);
-      toast.success("Vistoria atualizada com sucesso!");
+      toast.success("Vistoria atualizada!");
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "atualizar vistoria");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     } finally {
       setIsSaving(false);
     }
@@ -81,10 +78,9 @@ export default function Vistorias() {
     try {
       await updateVistoria(vistoriaId, { situacao: novaSituacao });
       await loadVistorias();
-      toast.success("Situação atualizada com sucesso!");
+      toast.success("Situação atualizada!");
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "atualizar situação");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     }
   }, []);
 
@@ -92,10 +88,9 @@ export default function Vistorias() {
     try {
       await updateVistoria(vistoriaId, { pagamento: novoPagamento });
       await loadVistorias();
-      toast.success("Forma de pagamento atualizada com sucesso!");
+      toast.success("Pagamento atualizado!");
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "atualizar forma de pagamento");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     }
   }, []);
 

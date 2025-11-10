@@ -49,8 +49,7 @@ export default function NovaVistoria() {
         setDigitadores(digitadoresData);
         setVistoriadores(vistoriadoresData);
       } catch (error: any) {
-        const friendlyMessage = getUserFriendlyError(error, "carregar dados");
-        toast.error(friendlyMessage);
+        toast.error(getUserFriendlyError(error));
       } finally {
         setIsLoading(false);
       }
@@ -142,11 +141,10 @@ export default function NovaVistoria() {
         liberador: formData.liberador,
         fotos: []
       });
-      toast.success("Vistoria cadastrada com sucesso!");
+      toast.success("Vistoria cadastrada!");
       navigate("/");
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "cadastrar vistoria");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     } finally {
       setIsSaving(false);
     }

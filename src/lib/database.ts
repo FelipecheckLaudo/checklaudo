@@ -17,7 +17,7 @@ const getAuthUser = async () => {
 /**
  * Generic function to get all records from a table
  */
-const getRecords = async <T>(tableName: string, operationName: string): Promise<T[]> => {
+const getRecords = async <T>(tableName: string): Promise<T[]> => {
   await getAuthUser();
 
   const { data, error } = await (supabase as any)
@@ -25,10 +25,7 @@ const getRecords = async <T>(tableName: string, operationName: string): Promise<
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, operationName);
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
   
   return (data || []).map((record: any) => ({
     ...record,
@@ -39,11 +36,7 @@ const getRecords = async <T>(tableName: string, operationName: string): Promise<
 /**
  * Generic function to save a record to a table
  */
-const saveRecord = async <T>(
-  tableName: string, 
-  recordData: any, 
-  operationName: string
-): Promise<T> => {
+const saveRecord = async <T>(tableName: string, recordData: any): Promise<T> => {
   const user = await getAuthUser();
 
   const { data, error } = await (supabase as any)
@@ -52,10 +45,7 @@ const saveRecord = async <T>(
     .select()
     .single();
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, operationName);
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
   
   return {
     ...data!,
@@ -66,12 +56,7 @@ const saveRecord = async <T>(
 /**
  * Generic function to update a record in a table
  */
-const updateRecord = async <T>(
-  tableName: string,
-  id: string,
-  recordData: any,
-  operationName: string
-): Promise<T> => {
+const updateRecord = async <T>(tableName: string, id: string, recordData: any): Promise<T> => {
   await getAuthUser();
 
   const { data, error } = await (supabase as any)
@@ -81,10 +66,7 @@ const updateRecord = async <T>(
     .select()
     .single();
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, operationName);
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
   
   return {
     ...data!,
@@ -95,7 +77,7 @@ const updateRecord = async <T>(
 /**
  * Generic function to delete a record from a table
  */
-const deleteRecord = async (tableName: string, id: string, operationName: string): Promise<void> => {
+const deleteRecord = async (tableName: string, id: string): Promise<void> => {
   await getAuthUser();
 
   const { error } = await (supabase as any)
@@ -103,38 +85,35 @@ const deleteRecord = async (tableName: string, id: string, operationName: string
     .delete()
     .eq('id', id);
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, operationName);
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
 };
 
 // ============================================
 // CLIENTES
 // ============================================
 
-export const getClientes = async (): Promise<Cliente[]> => getRecords<Cliente>('clientes', 'getClientes');
-export const saveCliente = async (cliente: any): Promise<Cliente> => saveRecord<Cliente>('clientes', cliente, 'saveCliente');
-export const updateCliente = async (id: string, cliente: any): Promise<Cliente> => updateRecord<Cliente>('clientes', id, cliente, 'updateCliente');
-export const deleteCliente = async (id: string): Promise<void> => deleteRecord('clientes', id, 'deleteCliente');
+export const getClientes = async (): Promise<Cliente[]> => getRecords<Cliente>('clientes');
+export const saveCliente = async (cliente: any): Promise<Cliente> => saveRecord<Cliente>('clientes', cliente);
+export const updateCliente = async (id: string, cliente: any): Promise<Cliente> => updateRecord<Cliente>('clientes', id, cliente);
+export const deleteCliente = async (id: string): Promise<void> => deleteRecord('clientes', id);
 
 // ============================================
 // VISITADORES
 // ============================================
 
-export const getVisitadores = async (): Promise<Visitador[]> => getRecords<Visitador>('vistoriadores', 'getVisitadores');
-export const saveVisitador = async (visitador: any): Promise<Visitador> => saveRecord<Visitador>('vistoriadores', visitador, 'saveVisitador');
-export const updateVisitador = async (id: string, visitador: any): Promise<Visitador> => updateRecord<Visitador>('vistoriadores', id, visitador, 'updateVisitador');
-export const deleteVisitador = async (id: string): Promise<void> => deleteRecord('vistoriadores', id, 'deleteVisitador');
+export const getVisitadores = async (): Promise<Visitador[]> => getRecords<Visitador>('vistoriadores');
+export const saveVisitador = async (visitador: any): Promise<Visitador> => saveRecord<Visitador>('vistoriadores', visitador);
+export const updateVisitador = async (id: string, visitador: any): Promise<Visitador> => updateRecord<Visitador>('vistoriadores', id, visitador);
+export const deleteVisitador = async (id: string): Promise<void> => deleteRecord('vistoriadores', id);
 
 // ============================================
 // DIGITADORES
 // ============================================
 
-export const getDigitadores = async (): Promise<Digitador[]> => getRecords<Digitador>('digitadores', 'getDigitadores');
-export const saveDigitador = async (digitador: any): Promise<Digitador> => saveRecord<Digitador>('digitadores', digitador, 'saveDigitador');
-export const updateDigitador = async (id: string, digitador: any): Promise<Digitador> => updateRecord<Digitador>('digitadores', id, digitador, 'updateDigitador');
-export const deleteDigitador = async (id: string): Promise<void> => deleteRecord('digitadores', id, 'deleteDigitador');
+export const getDigitadores = async (): Promise<Digitador[]> => getRecords<Digitador>('digitadores');
+export const saveDigitador = async (digitador: any): Promise<Digitador> => saveRecord<Digitador>('digitadores', digitador);
+export const updateDigitador = async (id: string, digitador: any): Promise<Digitador> => updateRecord<Digitador>('digitadores', id, digitador);
+export const deleteDigitador = async (id: string): Promise<void> => deleteRecord('digitadores', id);
 
 // ============================================
 // VISTORIAS (has special logic)
@@ -148,10 +127,7 @@ export const getVistorias = async (): Promise<Vistoria[]> => {
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "getVistorias");
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
   
   return (data || []).map((vistoria: any) => ({
     ...vistoria,
@@ -177,10 +153,7 @@ export const saveVistoria = async (vistoria: any): Promise<Vistoria> => {
     .select()
     .single();
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "saveVistoria");
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
   
   return {
     ...data!,
@@ -208,10 +181,7 @@ export const updateVistoria = async (id: string, vistoria: any): Promise<Vistori
     .select()
     .single();
   
-  if (error) {
-    const friendlyMessage = getUserFriendlyError(error, "updateVistoria");
-    throw new Error(friendlyMessage);
-  }
+  if (error) throw new Error(getUserFriendlyError(error));
   
   return {
     ...data!,
@@ -221,4 +191,4 @@ export const updateVistoria = async (id: string, vistoria: any): Promise<Vistori
   };
 };
 
-export const deleteVistoria = async (id: string): Promise<void> => deleteRecord('vistorias', id, 'deleteVistoria');
+export const deleteVistoria = async (id: string): Promise<void> => deleteRecord('vistorias', id);

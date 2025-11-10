@@ -51,8 +51,7 @@ export default function Analises() {
       setVistoriadores(vistoriadoresData.map(v => ({ id: v.id, nome: v.nome })));
       setDigitadores(digitadoresData.map(d => ({ id: d.id, nome: d.nome })));
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "carregar dados");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     } finally {
       setIsLoading(false);
     }

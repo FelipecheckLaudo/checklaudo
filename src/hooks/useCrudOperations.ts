@@ -29,8 +29,7 @@ export function useCrudOperations<T extends { id: string }>({
       const result = await getFn();
       setData(result);
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "carregar dados");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
     } finally {
       setIsLoading(false);
     }
@@ -41,11 +40,10 @@ export function useCrudOperations<T extends { id: string }>({
       setIsSaving(true);
       const result = await saveFn(itemData);
       await loadData();
-      toast.success("Item cadastrado com sucesso!");
+      toast.success("Item cadastrado!");
       return result;
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "cadastrar item");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
       return null;
     } finally {
       setIsSaving(false);
@@ -57,11 +55,10 @@ export function useCrudOperations<T extends { id: string }>({
       setIsSaving(true);
       const result = await updateFn(id, itemData);
       await loadData();
-      toast.success("Item atualizado com sucesso!");
+      toast.success("Item atualizado!");
       return result;
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "atualizar item");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
       return null;
     } finally {
       setIsSaving(false);
@@ -72,11 +69,10 @@ export function useCrudOperations<T extends { id: string }>({
     try {
       await deleteFn(id);
       await loadData();
-      toast.success("Item excluído com sucesso!");
+      toast.success("Item excluído!");
       return true;
     } catch (error: any) {
-      const friendlyMessage = getUserFriendlyError(error, "excluir item");
-      toast.error(friendlyMessage);
+      toast.error(getUserFriendlyError(error));
       return false;
     }
   }, [deleteFn, loadData]);
