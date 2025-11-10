@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores } from "@/lib/database";
+import { getClientes, saveVistoria, saveCliente, getDigitadores, getVisitadores } from "@/lib/localStorage";
 import type { Cliente, Digitador, Visitador } from "@/lib/types";
 import { PagamentoSelect } from "@/components/PagamentoSelect";
 import { ClienteFormSection } from "@/components/forms/ClienteFormSection";

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getVistorias } from "@/lib/database";
+import { getVistorias } from "@/lib/localStorage";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { DollarSign, FileText, TrendingUp, Users, Award } from "lucide-react";
 import { parseISO, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths, isWithinInterval, format } from "date-fns";

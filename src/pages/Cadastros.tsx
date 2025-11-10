@@ -39,7 +39,7 @@ import {
   type Cliente,
   type Visitador,
   type Digitador,
-} from "@/lib/database";
+} from "@/lib/localStorage";
 import { toast } from "sonner";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 
